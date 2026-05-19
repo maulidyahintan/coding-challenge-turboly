@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import { redirect } from "next/navigation";
 import { LogoutButton } from "@/components/shared/logout-button";
+import { TaskManager } from "@/features/task/task-manager";
 import { readServerSession } from "@/lib/auth/server-session";
 
 export default async function DashboardPage() {
@@ -23,6 +24,7 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
+              id="open-create-task-modal"
               className="inline-flex items-center gap-2 rounded-lg border border-sky-200/40 bg-sky-100/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-100/20"
             >
               <Plus size={16} />
@@ -31,6 +33,8 @@ export default async function DashboardPage() {
             <LogoutButton />
           </div>
         </header>
+
+        <TaskManager />
       </section>
     </main>
   );
