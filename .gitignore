@@ -11,6 +11,11 @@ build/
 # Prisma
 prisma/*.db
 prisma/*.db-journal
+*.db
+*.db-journal
+
+# Prisma generated client
+src/generated/
 
 # Environment variables
 .env
@@ -44,3 +49,4 @@ coverage/
 
 AGENTS.md
 CLAUDE.md
+/src/generated/prisma
