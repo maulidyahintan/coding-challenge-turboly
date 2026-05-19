@@ -1,7 +1,15 @@
 import { Plus } from "lucide-react";
+import { redirect } from "next/navigation";
 import { LogoutButton } from "@/components/shared/logout-button";
+import { readServerSession } from "@/lib/auth/server-session";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await readServerSession();
+
+  if (!session) {
+    redirect("/unauthorized");
+  }
+
   return (
     <main className="h-screen bg-linear-to-b from-sky-700 via-sky-600 to-sky-500 px-3 py-4 sm:px-5 sm:py-6">
       <section className="mx-auto flex h-full w-full max-w-[1400px] flex-col overflow-hidden rounded-2xl border border-sky-300/30 bg-sky-900/35 backdrop-blur-sm">
