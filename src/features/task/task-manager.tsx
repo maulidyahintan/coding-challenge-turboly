@@ -2,8 +2,14 @@
 
 import { TaskListSection } from "@/features/task/components/task-list-section";
 import { TaskModal } from "@/features/task/components/task-modal";
-import { TaskItem } from "@/features/task/types";
-import { readTaskPayload, toDateInputValue, validateTaskPayload } from "@/features/task/utils";
+import { TaskItem, TaskSortOption } from "@/features/task/types";
+import {
+  filterTasksByQuery,
+  readTaskPayload,
+  sortTasks,
+  toDateInputValue,
+  validateTaskPayload,
+} from "@/features/task/utils";
 import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 
 export function TaskManager() {
@@ -18,19 +24,23 @@ export function TaskManager() {
   const [updateErrorMessage, setUpdateErrorMessage] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [taskBeingEdited, setTaskBeingEdited] = useState<TaskItem | null>(null);
+  const [sortBy, setSortBy] = useState<TaskSortOption>("dueDate");
+  const [titleFilter, setTitleFilter] = useState("");
 
-  const totalOpenTasks = useMemo(
-    () => tasks.filter((task) => !task.completed).length,
-    [tasks]
-  );
+  const totalOpenTasks = useMemo(() => tasks.filter((task) => !task.completed).length, [tasks]);
+
+  const filteredTasks = useMemo(() => filterTasksByQuery(tasks, titleFilter), [tasks, titleFilter]);
+
+  const displayedTasks = useMemo(() => sortTasks(filteredTasks, sortBy), [filteredTasks, sortBy]);
 
   const loadTasks = async () => {
     setErrorMessage(null);
 
     const response = await fetch("/api/tasks", { cache: "no-store" });
-    const result = (await response.json().catch(() => null)) as
-      | { tasks?: TaskItem[]; message?: string }
-      | null;
+    const result = (await response.json().catch(() => null)) as {
+      tasks?: TaskItem[];
+      message?: string;
+    } | null;
 
     if (!response.ok) {
       setErrorMessage(result?.message ?? "Failed to load tasks.");
@@ -83,9 +93,10 @@ export function TaskManager() {
       body: JSON.stringify(payload),
     });
 
-    const result = (await response.json().catch(() => null)) as
-      | { task?: TaskItem; message?: string }
-      | null;
+    const result = (await response.json().catch(() => null)) as {
+      task?: TaskItem;
+      message?: string;
+    } | null;
 
     if (!response.ok || !result?.task) {
       setCreateErrorMessage(result?.message ?? "Failed to create task.");
@@ -126,9 +137,10 @@ export function TaskManager() {
       body: JSON.stringify(payload),
     });
 
-    const result = (await response.json().catch(() => null)) as
-      | { task?: TaskItem; message?: string }
-      | null;
+    const result = (await response.json().catch(() => null)) as {
+      task?: TaskItem;
+      message?: string;
+    } | null;
 
     if (!response.ok || !result?.task) {
       setUpdateErrorMessage(result?.message ?? "Failed to update task.");
@@ -136,9 +148,7 @@ export function TaskManager() {
       return;
     }
 
-    setTasks((prev) =>
-      prev.map((task) => (task.id === result.task?.id ? result.task : task))
-    );
+    setTasks((prev) => prev.map((task) => (task.id === result.task?.id ? result.task : task)));
     setTaskBeingEdited(null);
     setIsUpdating(false);
   };
@@ -155,9 +165,7 @@ export function TaskManager() {
       method: "DELETE",
     });
 
-    const result = (await response.json().catch(() => null)) as
-      | { message?: string }
-      | null;
+    const result = (await response.json().catch(() => null)) as { message?: string } | null;
 
     if (!response.ok) {
       setErrorMessage(result?.message ?? "Failed to delete task.");
@@ -183,9 +191,10 @@ export function TaskManager() {
       body: JSON.stringify({ completed: !task.completed }),
     });
 
-    const result = (await response.json().catch(() => null)) as
-      | { task?: TaskItem; message?: string }
-      | null;
+    const result = (await response.json().catch(() => null)) as {
+      task?: TaskItem;
+      message?: string;
+    } | null;
 
     if (!response.ok || !result?.task) {
       setErrorMessage(result?.message ?? "Failed to update task status.");
@@ -193,9 +202,7 @@ export function TaskManager() {
       return;
     }
 
-    setTasks((prev) =>
-      prev.map((item) => (item.id === result.task?.id ? result.task : item))
-    );
+    setTasks((prev) => prev.map((item) => (item.id === result.task?.id ? result.task : item)));
     setCompletingTaskId(null);
   };
 
@@ -238,12 +245,16 @@ export function TaskManager() {
       />
 
       <TaskListSection
-        tasks={tasks}
+        tasks={displayedTasks}
         isLoading={isLoading}
         errorMessage={errorMessage}
         totalOpenTasks={totalOpenTasks}
+        sortBy={sortBy}
+        titleFilter={titleFilter}
         deletingTaskId={deletingTaskId}
         completingTaskId={completingTaskId}
+        onSortChange={setSortBy}
+        onTitleFilterChange={setTitleFilter}
         onEditTask={(task) => {
           setUpdateErrorMessage(null);
           setTaskBeingEdited(task);

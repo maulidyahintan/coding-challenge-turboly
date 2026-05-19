@@ -1,5 +1,7 @@
 export type TaskPriority = "LOW" | "MEDIUM" | "HIGH";
 
+export type TaskSortOption = "dueDate" | "title" | "description" | "priority";
+
 export type TaskItem = {
   id: string;
   title: string;

@@ -1,4 +1,18 @@
-import { TaskFormPayload } from "@/features/task/types";
+import { TaskFormPayload, TaskItem, TaskSortOption } from "@/features/task/types";
+
+const priorityRank: Record<TaskItem["priority"], number> = {
+  HIGH: 0,
+  MEDIUM: 1,
+  LOW: 2,
+};
+
+const sortComparators: Record<TaskSortOption, (left: TaskItem, right: TaskItem) => number> = {
+  dueDate: (left, right) => new Date(left.dueDate).getTime() - new Date(right.dueDate).getTime(),
+  title: (left, right) => left.title.localeCompare(right.title),
+  description: (left, right) =>
+    (left.description ?? left.title).localeCompare(right.description ?? right.title),
+  priority: (left, right) => priorityRank[left.priority] - priorityRank[right.priority],
+};
 
 export function isOverdueDueDate(dueDate: string) {
   const today = new Date();
@@ -40,4 +54,21 @@ export function validateTaskPayload(payload: TaskFormPayload) {
   }
 
   return null;
+}
+
+export function sortTasks(tasks: TaskItem[], sortBy: TaskSortOption) {
+  return [...tasks].sort(sortComparators[sortBy]);
+}
+
+export function filterTasksByQuery(tasks: TaskItem[], query: string) {
+  const normalizedQuery = query.trim().toLowerCase();
+
+  if (!normalizedQuery) {
+    return tasks;
+  }
+
+  return tasks.filter((task) => {
+    const searchTarget = `${task.title} ${task.description ?? ""}`.toLowerCase();
+    return searchTarget.includes(normalizedQuery);
+  });
 }
