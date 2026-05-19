@@ -11,6 +11,7 @@ export function TaskManager() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
   const [updateErrorMessage, setUpdateErrorMessage] = useState<string | null>(null);
@@ -141,6 +142,32 @@ export function TaskManager() {
     setIsUpdating(false);
   };
 
+  const handleDelete = async (task: TaskItem) => {
+    if (deletingTaskId) {
+      return;
+    }
+
+    setErrorMessage(null);
+    setDeletingTaskId(task.id);
+
+    const response = await fetch(`/api/tasks/${task.id}`, {
+      method: "DELETE",
+    });
+
+    const result = (await response.json().catch(() => null)) as
+      | { message?: string }
+      | null;
+
+    if (!response.ok) {
+      setErrorMessage(result?.message ?? "Failed to delete task.");
+      setDeletingTaskId(null);
+      return;
+    }
+
+    setTasks((prev) => prev.filter((item) => item.id !== task.id));
+    setDeletingTaskId(null);
+  };
+
   return (
     <>
       <TaskModal
@@ -184,10 +211,12 @@ export function TaskManager() {
         isLoading={isLoading}
         errorMessage={errorMessage}
         totalOpenTasks={totalOpenTasks}
+        deletingTaskId={deletingTaskId}
         onEditTask={(task) => {
           setUpdateErrorMessage(null);
           setTaskBeingEdited(task);
         }}
+        onDeleteTask={handleDelete}
       />
     </>
   );

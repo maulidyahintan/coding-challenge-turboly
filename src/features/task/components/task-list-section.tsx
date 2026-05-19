@@ -6,7 +6,9 @@ type TaskListSectionProps = Readonly<{
   isLoading: boolean;
   errorMessage: string | null;
   totalOpenTasks: number;
+  deletingTaskId: string | null;
   onEditTask: (task: TaskItem) => void;
+  onDeleteTask: (task: TaskItem) => void;
 }>;
 
 export function TaskListSection({
@@ -14,7 +16,9 @@ export function TaskListSection({
   isLoading,
   errorMessage,
   totalOpenTasks,
+  deletingTaskId,
   onEditTask,
+  onDeleteTask,
 }: TaskListSectionProps) {
   return (
     <div className="flex-1 overflow-hidden p-4 font-sans">
@@ -41,7 +45,17 @@ export function TaskListSection({
             </p>
           ) : null}
 
-          {isLoading ? null : tasks.map((task) => <TaskCard key={task.id} task={task} onEdit={onEditTask} />)}
+          {isLoading
+            ? null
+            : tasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onEdit={onEditTask}
+                  onDelete={onDeleteTask}
+                  isDeleting={deletingTaskId === task.id}
+                />
+              ))}
         </div>
       </section>
     </div>

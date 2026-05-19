@@ -86,3 +86,35 @@ export async function PATCH(
 
   return NextResponse.json({ task });
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ taskId: string }> }
+) {
+  const session = await readRequestSession(request);
+
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const { taskId } = await params;
+
+  if (!taskId?.trim()) {
+    return NextResponse.json({ message: "Task id is required" }, { status: 400 });
+  }
+
+  const existingTask = await prisma.task.findFirst({
+    where: { id: taskId, userId: session.user.id },
+    select: { id: true },
+  });
+
+  if (!existingTask) {
+    return NextResponse.json({ message: "Task not found" }, { status: 404 });
+  }
+
+  await prisma.task.delete({
+    where: { id: taskId },
+  });
+
+  return NextResponse.json({ message: "Task deleted" });
+}
