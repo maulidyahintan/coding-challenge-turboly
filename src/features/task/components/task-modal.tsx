@@ -1,6 +1,6 @@
-import { SyntheticEvent } from "react";
 import { FormLabel } from "@/components/ui/form-label";
 import { TaskItem } from "@/features/task/types";
+import { SyntheticEvent } from "react";
 
 type TaskModalProps = Readonly<{
   title: string;

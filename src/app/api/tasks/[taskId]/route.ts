@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { readRequestSession } from "@/lib/auth/request-session";
+import { prisma } from "@/lib/prisma";
 import { updateTaskSchema } from "@/lib/validations/task";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 type UpdateTaskPayload = {
   title?: string;

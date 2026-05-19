@@ -1,10 +1,10 @@
 "use client";
 
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { TaskListSection } from "@/features/task/components/task-list-section";
 import { TaskModal } from "@/features/task/components/task-modal";
 import { TaskItem } from "@/features/task/types";
 import { readTaskPayload, toDateInputValue, validateTaskPayload } from "@/features/task/utils";
+import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 
 export function TaskManager() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -12,6 +12,7 @@ export function TaskManager() {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+  const [completingTaskId, setCompletingTaskId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
   const [updateErrorMessage, setUpdateErrorMessage] = useState<string | null>(null);
@@ -168,6 +169,36 @@ export function TaskManager() {
     setDeletingTaskId(null);
   };
 
+  const handleToggleComplete = async (task: TaskItem) => {
+    if (completingTaskId) {
+      return;
+    }
+
+    setErrorMessage(null);
+    setCompletingTaskId(task.id);
+
+    const response = await fetch(`/api/tasks/${task.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed: !task.completed }),
+    });
+
+    const result = (await response.json().catch(() => null)) as
+      | { task?: TaskItem; message?: string }
+      | null;
+
+    if (!response.ok || !result?.task) {
+      setErrorMessage(result?.message ?? "Failed to update task status.");
+      setCompletingTaskId(null);
+      return;
+    }
+
+    setTasks((prev) =>
+      prev.map((item) => (item.id === result.task?.id ? result.task : item))
+    );
+    setCompletingTaskId(null);
+  };
+
   return (
     <>
       <TaskModal
@@ -212,11 +243,13 @@ export function TaskManager() {
         errorMessage={errorMessage}
         totalOpenTasks={totalOpenTasks}
         deletingTaskId={deletingTaskId}
+        completingTaskId={completingTaskId}
         onEditTask={(task) => {
           setUpdateErrorMessage(null);
           setTaskBeingEdited(task);
         }}
         onDeleteTask={handleDelete}
+        onToggleCompleteTask={handleToggleComplete}
       />
     </>
   );

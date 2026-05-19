@@ -1,5 +1,5 @@
-import { TaskItem } from "@/features/task/types";
 import { TaskCard } from "@/features/task/components/task-card";
+import { TaskItem } from "@/features/task/types";
 
 type TaskListSectionProps = Readonly<{
   tasks: TaskItem[];
@@ -7,8 +7,10 @@ type TaskListSectionProps = Readonly<{
   errorMessage: string | null;
   totalOpenTasks: number;
   deletingTaskId: string | null;
+  completingTaskId: string | null;
   onEditTask: (task: TaskItem) => void;
   onDeleteTask: (task: TaskItem) => void;
+  onToggleCompleteTask: (task: TaskItem) => void;
 }>;
 
 export function TaskListSection({
@@ -17,8 +19,10 @@ export function TaskListSection({
   errorMessage,
   totalOpenTasks,
   deletingTaskId,
+  completingTaskId,
   onEditTask,
   onDeleteTask,
+  onToggleCompleteTask,
 }: TaskListSectionProps) {
   return (
     <div className="flex-1 overflow-hidden p-4 font-sans">
@@ -53,7 +57,9 @@ export function TaskListSection({
                   task={task}
                   onEdit={onEditTask}
                   onDelete={onDeleteTask}
+                  onToggleComplete={onToggleCompleteTask}
                   isDeleting={deletingTaskId === task.id}
+                  isCompleting={completingTaskId === task.id}
                 />
               ))}
         </div>
