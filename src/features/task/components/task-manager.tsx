@@ -36,17 +36,25 @@ export function TaskManager() {
   const [updateErrorMessage, setUpdateErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const trigger = document.getElementById("open-create-task-modal");
+    const legacyTrigger = document.getElementById("open-create-task-modal");
+    const dataTriggers = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-open-create-task-modal='true']")
+    );
+    const triggerSet = new Set<HTMLElement>([
+      ...dataTriggers,
+      ...(legacyTrigger ? [legacyTrigger] : []),
+    ]);
+    const triggers = Array.from(triggerSet);
 
-    if (!trigger) {
+    if (triggers.length === 0) {
       return;
     }
 
     const openModal = () => setIsCreateModalOpen(true);
-    trigger.addEventListener("click", openModal);
+    triggers.forEach((trigger) => trigger.addEventListener("click", openModal));
 
     return () => {
-      trigger.removeEventListener("click", openModal);
+      triggers.forEach((trigger) => trigger.removeEventListener("click", openModal));
     };
   }, []);
 
@@ -102,7 +110,7 @@ export function TaskManager() {
     try {
       await deleteMutation.mutateAsync(task.id);
     } catch (err) {
-      console.error(err);
+      setUpdateErrorMessage(err instanceof Error ? err.message : "Failed to delete task.");
     }
   };
 
@@ -110,7 +118,7 @@ export function TaskManager() {
     try {
       await completeMutation.mutateAsync({ id: task.id, completed: !task.completed });
     } catch (err) {
-      console.error(err);
+      setUpdateErrorMessage(err instanceof Error ? err.message : "Failed to update task.");
     }
   };
 
@@ -145,11 +153,6 @@ export function TaskManager() {
         return "All Tasks";
     }
   }, [activeGrupTasks]);
-
-  const totalOpenTasks = useMemo(
-    () => groupedTasks.filter((task) => !task.completed).length,
-    [groupedTasks]
-  );
 
   const filteredTasks = useMemo(
     () => filterTasksByQuery(groupedTasks, titleFilter),
@@ -211,7 +214,6 @@ export function TaskManager() {
         tasks={displayedTasks}
         isLoading={isLoading}
         errorMessage={error?.message ?? null}
-        totalOpenTasks={totalOpenTasks}
         sortBy={sortBy}
         titleFilter={titleFilter}
         deletingTaskId={deleteMutation.isPending ? "pending" : null}

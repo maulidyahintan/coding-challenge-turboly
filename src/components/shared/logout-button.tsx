@@ -6,9 +6,10 @@ import { useEffect, useRef, useState } from "react";
 
 type LogoutButtonProps = Readonly<{
   userEmail: string;
+  iconOnly?: boolean;
 }>;
 
-export function LogoutButton({ userEmail }: LogoutButtonProps) {
+export function LogoutButton({ userEmail, iconOnly = false }: LogoutButtonProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,22 +54,31 @@ export function LogoutButton({ userEmail }: LogoutButtonProps) {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex items-center gap-2 rounded-xl border border-sky-300/70 bg-white/95 px-2 py-1.5 text-slate-800 shadow-sm transition hover:bg-sky-50"
+        className={
+          iconOnly
+            ? "grid h-10 w-10 place-items-center rounded-xl border border-sky-300/70 bg-white/95 text-slate-800 shadow-sm transition hover:bg-sky-50"
+            : "flex items-center gap-2 rounded-xl border border-sky-300/70 bg-white/95 px-2 py-1.5 text-slate-800 shadow-sm transition hover:bg-sky-50"
+        }
+        aria-label={iconOnly ? "Open account menu" : undefined}
       >
         <span className="grid h-8 w-8 place-items-center rounded-lg bg-sky-700 text-white">
           <UserCircle2 size={18} />
         </span>
-        <span className="text-left leading-tight">
-          <span className="block text-[11px] uppercase tracking-[0.12em] text-slate-500">
-            Account
-          </span>
-          <span className="block truncate text-sm font-semibold">{userEmail}</span>
-        </span>
-        <ChevronDown size={16} className="text-slate-500" />
+        {iconOnly ? null : (
+          <>
+            <span className="text-left leading-tight">
+              <span className="block text-[11px] uppercase tracking-[0.12em] text-slate-500">
+                Account
+              </span>
+              <span className="block truncate text-sm font-semibold">{userEmail}</span>
+            </span>
+            <ChevronDown size={16} className="text-slate-500" />
+          </>
+        )}
       </button>
 
       {isOpen ? (
-        <div className="absolute top-12 right-0 z-100 w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
+        <div className="absolute right-0 top-12 z-100 w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
           <button
             type="button"
             onClick={handleLogout}

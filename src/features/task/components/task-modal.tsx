@@ -161,7 +161,7 @@ export function TaskModal({
                 type="button"
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={isSubmitting || isDeleting}
-                className="inline-flex items-center justify-center rounded-md p-1 bg-slate-100 text-rose-600 transition hover:bg-rose-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center justify-center rounded-md bg-slate-100 p-1 text-rose-600 transition hover:bg-rose-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Delete task"
               >
                 <Trash2 size={18} />

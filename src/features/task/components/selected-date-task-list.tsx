@@ -1,5 +1,6 @@
 "use client";
 
+import { PreviewTaskCard } from "@/components/shared/task-card";
 import { TaskModal } from "@/features/task/components/task-modal";
 import type { TaskItem } from "@/features/task/types";
 import { readTaskPayload, toDateInputValue, validateTaskPayload } from "@/features/task/utils";
@@ -10,18 +11,6 @@ import { SyntheticEvent, useMemo, useState } from "react";
 type SelectedDateTaskListProps = Readonly<{
   selectedDate: Date | undefined;
 }>;
-
-const priorityArticleClassName: Record<TaskItem["priority"], string> = {
-  LOW: "border-emerald-200 bg-emerald-50 text-emerald-950",
-  MEDIUM: "border-amber-200 bg-amber-50 text-amber-950",
-  HIGH: "border-rose-200 bg-rose-50 text-rose-950",
-};
-
-const priorityDetailButtonClassName: Record<TaskItem["priority"], string> = {
-  LOW: "border-emerald-200/60 bg-emerald-100/60 text-emerald-900 hover:bg-emerald-100",
-  MEDIUM: "border-amber-200/60 bg-amber-100/60 text-amber-900 hover:bg-amber-100",
-  HIGH: "border-rose-200/60 bg-rose-100/60 text-rose-900 hover:bg-rose-100",
-};
 
 function isSameDate(dateText: string, target: Date): boolean {
   const date = new Date(dateText);
@@ -152,24 +141,11 @@ export function SelectedDateTaskList({ selectedDate }: SelectedDateTaskListProps
           {!isLoading &&
             !error &&
             dateTasks.map((task) => (
-              <article
+              <PreviewTaskCard
                 key={task.id}
-                className={`rounded-lg border p-3 ${priorityArticleClassName[task.priority]}`}
-              >
-                <div className="flex justify-between gap-2 items-center">
-                  <p className="text-sm flex-1 truncate font-semibold">{task.title}</p>
-                  <button
-                    type="button"
-                    onClick={() => setTaskBeingEdited(task)}
-                    className={`rounded-md border px-2 py-1 text-xs font-semibold transition ${priorityDetailButtonClassName[task.priority]}`}
-                  >
-                    Detail
-                  </button>
-                </div>
-                {task.description ? (
-                  <p className="mt-1 truncate text-xs opacity-80">{task.description}</p>
-                ) : null}
-              </article>
+                task={task}
+                onDetail={() => setTaskBeingEdited(task)}
+              />
             ))}
         </div>
       </div>

@@ -8,7 +8,6 @@ type TaskListSectionProps = Readonly<{
   tasks: TaskItem[];
   isLoading: boolean;
   errorMessage: string | null;
-  totalOpenTasks: number;
   sortBy: TaskSortOption;
   titleFilter: string;
   deletingTaskId: string | null;
@@ -25,7 +24,6 @@ export function TaskListSection({
   tasks,
   isLoading,
   errorMessage,
-  totalOpenTasks,
   sortBy,
   titleFilter,
   deletingTaskId,
