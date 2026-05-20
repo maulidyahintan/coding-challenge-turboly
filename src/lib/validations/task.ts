@@ -12,7 +12,3 @@ export const createTaskSchema = z.object({
 export const updateTaskSchema = createTaskSchema.partial().extend({
   completed: z.boolean().optional(),
 });
-
-export type CreateTaskInput = z.infer<typeof createTaskSchema>;
-export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
-export type TaskPriority = z.infer<typeof prioritySchema>;

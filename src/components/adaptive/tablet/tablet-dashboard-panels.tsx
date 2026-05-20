@@ -27,12 +27,6 @@ export function TabletDashboardPanels({
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
 
-  const displayName =
-    userEmail
-      .split("@")[0]
-      ?.replace(/[._-]/g, " ")
-      .replace(/\b\w/g, (char) => char.toUpperCase()) ?? userEmail;
-
   const handleLogout = async () => {
     setIsLoggingOut(true);
     setLogoutError(null);
