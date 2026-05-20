@@ -8,6 +8,7 @@ import { DayPicker } from "react-day-picker";
 type MonthCalendarProps = Readonly<{
   selectedDate?: Date;
   onSelectedDateChange?: (date: Date | undefined) => void;
+  numberOfMonths?: number;
 }>;
 
 function CalendarChevron({ orientation, ...props }: Parameters<CustomComponents["Chevron"]>[0]) {
@@ -18,7 +19,11 @@ function CalendarChevron({ orientation, ...props }: Parameters<CustomComponents[
   );
 }
 
-export function MonthCalendar({ selectedDate, onSelectedDateChange }: MonthCalendarProps) {
+export function MonthCalendar({
+  selectedDate,
+  onSelectedDateChange,
+  numberOfMonths = 1,
+}: MonthCalendarProps) {
   const today = useMemo(() => new Date(), []);
   const [month, setMonth] = useState(today);
   const [internalSelectedDate, setInternalSelectedDate] = useState<Date | undefined>(today);
@@ -34,15 +39,18 @@ export function MonthCalendar({ selectedDate, onSelectedDateChange }: MonthCalen
     <DayPicker
       mode="single"
       month={month}
+      numberOfMonths={numberOfMonths}
       selected={activeSelectedDate}
       onSelect={handleSelectDate}
       onMonthChange={setMonth}
+      pagedNavigation={numberOfMonths > 1}
       showOutsideDays
       components={{
         Chevron: CalendarChevron,
       }}
       className="bg-white text-black px-4 py-2 rounded-b-none text-sm"
       classNames={{
+        months: numberOfMonths > 1 ? "flex flex-row gap-4" : undefined,
         month_grid: "w-full border-separate border-spacing-0.5",
         caption_label: "mt-2 text-sm px-2 font-semibold uppercase tracking-[0.08em] text-sky-700",
         weekday:

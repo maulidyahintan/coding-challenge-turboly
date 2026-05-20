@@ -1,6 +1,7 @@
 "use client";
 
 import { MobileDashboardPanels } from "@/components/adaptive/mobile/mobile-dashboard-panels";
+import { TabletDashboardPanels } from "@/components/adaptive/tablet/tablet-dashboard-panels";
 import { MonthCalendar } from "@/components/shared/month-calendar";
 import { SelectedDateTaskList } from "@/features/task/components/selected-date-task-list";
 import { TaskAlertsSection } from "@/features/task/components/task-alerts-section";
@@ -22,7 +23,13 @@ export function DashboardPanels({ userEmail }: DashboardPanelsProps) {
         userEmail={userEmail}
       />
 
-      <div className="hidden min-h-0 flex-1 gap-4 md:flex">
+      <TabletDashboardPanels
+        selectedDate={selectedDate}
+        onSelectedDateChange={setSelectedDate}
+        userEmail={userEmail}
+      />
+
+      <div className="hidden min-h-0 flex-1 gap-4 lg:flex">
         <section className="flex h-full min-h-0 w-90 flex-col overflow-hidden rounded-2xl border border-sky-300/30 backdrop-blur-sm">
           <MonthCalendar selectedDate={selectedDate} onSelectedDateChange={setSelectedDate} />
           <SelectedDateTaskList selectedDate={selectedDate} />

@@ -17,6 +17,7 @@ type TaskAlertSquareProps = Readonly<{
   forceActiveStyle?: boolean;
   alwaysShowView?: boolean;
   isMobileView?: boolean;
+  fillWidth?: boolean;
 }>;
 
 const toneClasses: Record<TaskAlertTone, string> = {
@@ -86,6 +87,7 @@ export function TaskAlertSquare({
   forceActiveStyle = false,
   alwaysShowView = false,
   isMobileView = false,
+  fillWidth = false,
 }: TaskAlertSquareProps) {
   const ToneIcon = toneIcons[tone];
   const useActiveStyle = forceActiveStyle || isActive;
@@ -96,7 +98,7 @@ export function TaskAlertSquare({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-24 flex-1 cursor-pointer flex-col justify-between rounded-lg p-3 text-left ${toneClasses[tone]} ${useActiveStyle ? activeToneClasses[tone] : "bg-white"}`}
+      className={`flex h-24 cursor-pointer flex-col justify-between rounded-lg p-3 text-left ${fillWidth ? "w-full" : "flex-1"} ${toneClasses[tone]} ${useActiveStyle ? activeToneClasses[tone] : "bg-white"}`}
     >
       <div className="flex items-start justify-between gap-2">
         <p className="text-xs font-bold uppercase tracking-wide opacity-70">{toneLabels[tone]}</p>
