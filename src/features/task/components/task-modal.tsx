@@ -1,6 +1,9 @@
+"use client";
+
 import { FormLabel } from "@/components/ui/form-label";
 import { TaskItem } from "@/features/task/types";
 import { SyntheticEvent } from "react";
+import { createPortal } from "react-dom";
 
 type TaskModalProps = Readonly<{
   title: string;
@@ -11,6 +14,7 @@ type TaskModalProps = Readonly<{
   initialValues?: Partial<Pick<TaskItem, "title" | "description" | "priority">> & {
     dueDate?: string;
   };
+  isCompleted?: boolean;
   onClose: () => void;
   onSubmit: (event: SyntheticEvent<HTMLFormElement>) => void;
 }>;
@@ -22,14 +26,15 @@ export function TaskModal({
   submitLabel,
   errorMessage,
   initialValues,
+  isCompleted,
   onClose,
   onSubmit,
 }: TaskModalProps) {
-  if (!isOpen) {
+  if (!isOpen || typeof document === "undefined") {
     return null;
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4">
       <div className="w-full max-w-md rounded-xl border border-sky-200/30 bg-white p-4 font-sans shadow-2xl">
         <div className="flex items-center justify-between">
@@ -97,6 +102,35 @@ export function TaskModal({
             <p className="rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-700">{errorMessage}</p>
           ) : null}
 
+          {isCompleted === undefined ? null : (
+            <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2">
+              <input type="hidden" name="completed" value="false" />
+
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-slate-700">Task Status</p>
+
+                <label className="inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    name="completed"
+                    value="true"
+                    defaultChecked={isCompleted}
+                    disabled={isSubmitting}
+                    className="peer sr-only"
+                    aria-label="Toggle task completion"
+                  />
+                  <span className="relative h-7 w-14 rounded-full border border-slate-400 bg-slate-300 transition peer-checked:border-emerald-500 peer-checked:bg-emerald-500/90 peer-disabled:cursor-not-allowed peer-disabled:opacity-60">
+                    <span className="absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 peer-checked:translate-x-7" />
+                  </span>
+                </label>
+              </div>
+
+              <p className="mt-2 text-xs font-medium text-slate-600">
+                Slide to set status, then click Save Changes.
+              </p>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={isSubmitting}
@@ -106,6 +140,7 @@ export function TaskModal({
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

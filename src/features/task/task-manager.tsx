@@ -106,6 +106,7 @@ export function TaskManager() {
 
     const createdTask = result.task;
     setTasks((prev) => [createdTask, ...prev]);
+    globalThis.dispatchEvent(new CustomEvent("tasks-updated"));
     form.reset();
     setIsCreateModalOpen(false);
     setIsCreating(false);
@@ -149,6 +150,7 @@ export function TaskManager() {
     }
 
     setTasks((prev) => prev.map((task) => (task.id === result.task?.id ? result.task : task)));
+    globalThis.dispatchEvent(new CustomEvent("tasks-updated"));
     setTaskBeingEdited(null);
     setIsUpdating(false);
   };
@@ -174,6 +176,7 @@ export function TaskManager() {
     }
 
     setTasks((prev) => prev.filter((item) => item.id !== task.id));
+    globalThis.dispatchEvent(new CustomEvent("tasks-updated"));
     setDeletingTaskId(null);
   };
 
@@ -203,6 +206,7 @@ export function TaskManager() {
     }
 
     setTasks((prev) => prev.map((item) => (item.id === result.task?.id ? result.task : item)));
+    globalThis.dispatchEvent(new CustomEvent("tasks-updated"));
     setCompletingTaskId(null);
   };
 
@@ -225,6 +229,7 @@ export function TaskManager() {
         title="Update Task"
         isOpen={Boolean(taskBeingEdited)}
         isSubmitting={isUpdating}
+        isCompleted={taskBeingEdited?.completed}
         submitLabel="Save Changes"
         errorMessage={updateErrorMessage}
         initialValues={

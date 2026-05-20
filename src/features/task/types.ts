@@ -17,4 +17,5 @@ export type TaskFormPayload = {
   description: string;
   priority: TaskPriority;
   dueDate: string;
+  completed?: boolean;
 };

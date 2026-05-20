@@ -24,6 +24,16 @@ export function isOverdueDueDate(dueDate: string) {
   return due < today;
 }
 
+export function isDueTodayDate(dueDate: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const due = new Date(dueDate);
+  due.setHours(0, 0, 0, 0);
+
+  return due.getTime() === today.getTime();
+}
+
 export function toDateInputValue(dateValue: string) {
   const date = new Date(dateValue);
   const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
@@ -36,11 +46,19 @@ export function readTaskPayload(formData: FormData): TaskFormPayload {
     return typeof value === "string" ? value : fallback;
   };
 
+  const completedValues = formData
+    .getAll("completed")
+    .filter((value): value is string => typeof value === "string");
+  const completedField = completedValues.at(-1);
+  const completed =
+    typeof completedField === "string" ? completedField.trim().toLowerCase() === "true" : undefined;
+
   return {
     title: readField("title"),
     description: readField("description"),
     priority: readField("priority", "MEDIUM") as TaskFormPayload["priority"],
     dueDate: readField("dueDate"),
+    completed,
   };
 }
 

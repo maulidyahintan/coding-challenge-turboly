@@ -33,8 +33,8 @@ export function TaskListSection({
   onToggleCompleteTask,
 }: TaskListSectionProps) {
   return (
-    <div className="flex-1 overflow-hidden p-4 font-sans">
-      <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-sky-200/25 bg-sky-950/45 p-4">
+    <div className="flex-1 overflow-hidden font-sans">
+      <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl bg-sky-950/45 p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-sky-100/80">
             Tasks
