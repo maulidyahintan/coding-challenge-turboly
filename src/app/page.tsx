@@ -5,13 +5,13 @@ export default function Home() {
     <main className="flex min-h-full flex-1 items-center justify-center bg-slate-100 px-4 py-10">
       <section className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-8 shadow-xl sm:p-10">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-          Turboly Challenge
+          Turboly Coding Challenge
         </p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
           Adaptive Task Manager
         </h1>
         <p className="mt-3 max-w-xl text-slate-600">
-          Authentication flow is ready. Continue to login and enter the dashboard.
+          Adaptive Task Manager with secure auth, built for mobile, tablet, and desktop workflows.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">

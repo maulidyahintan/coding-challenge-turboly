@@ -16,7 +16,7 @@ export default async function DashboardPage() {
       <div className="relative z-50 mx-auto justify-between hidden w-full md:flex lg:hidden">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100/80">
-            Turboly Challenge
+            Turboly Coding Challenge
           </p>
           <h1 className="text-2xl font-semibold text-white">Adaptive Task Manager</h1>
         </div>
@@ -34,7 +34,7 @@ export default async function DashboardPage() {
       <nav className="relative z-50 mx-auto hidden w-full items-center justify-between gap-3 rounded-2xl border border-sky-300/30 bg-sky-900/35 px-4 py-3 backdrop-blur-sm lg:flex sm:px-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100/80">
-            Turboly Challenge
+            Turboly Coding Challenge
           </p>
           <h1 className="text-2xl font-semibold text-white">Adaptive Task Manager</h1>
         </div>
