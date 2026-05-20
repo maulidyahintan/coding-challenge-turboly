@@ -4,7 +4,7 @@ import { CheckCircle2, Circle, Loader2, Pencil, Trash2 } from "lucide-react";
 
 const priorityBadgeStyle: Record<TaskItem["priority"], string> = {
   LOW: "bg-emerald-100 text-emerald-700",
-  MEDIUM: "bg-amber-100 text-amber-700",
+  MEDIUM: "bg-yellow-100 text-yellow-800",
   HIGH: "bg-rose-100 text-rose-700",
 };
 
@@ -35,7 +35,7 @@ function getDescriptionClassName(isCompleted: boolean, isOverdue: boolean) {
   }
 
   if (isOverdue) {
-    return "mt-1 text-xs text-rose-700";
+    return "mt-1 text-xs text-red-700";
   }
 
   return "mt-1 text-xs text-slate-600";
@@ -47,7 +47,7 @@ function getDueDateClassName(isCompleted: boolean, isOverdue: boolean) {
   }
 
   if (isOverdue) {
-    return "mt-2 text-xs font-medium text-rose-700";
+    return "mt-2 text-xs font-medium text-red-700";
   }
 
   return "mt-2 text-xs text-slate-500";
@@ -74,7 +74,7 @@ export function TaskCard({
     <article
       className={
         isOverdue
-          ? "rounded-lg border border-rose-300 bg-rose-50 p-3 text-rose-900"
+          ? "rounded-lg border border-red-300 bg-red-50 p-3 text-red-900"
           : "rounded-lg border border-slate-200 bg-white p-3 text-slate-800"
       }
     >

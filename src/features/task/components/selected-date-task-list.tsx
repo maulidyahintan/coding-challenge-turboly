@@ -10,6 +10,7 @@ import { SyntheticEvent, useMemo, useState } from "react";
 
 type SelectedDateTaskListProps = Readonly<{
   selectedDate: Date | undefined;
+  isMobileView?: boolean;
 }>;
 
 function isSameDate(dateText: string, target: Date): boolean {
@@ -34,7 +35,10 @@ function formatSelectedDateLabel(date: Date | undefined): string {
   }).format(date);
 }
 
-export function SelectedDateTaskList({ selectedDate }: SelectedDateTaskListProps) {
+export function SelectedDateTaskList({
+  selectedDate,
+  isMobileView = false,
+}: SelectedDateTaskListProps) {
   const { tasks, isLoading, error } = useTasksContext();
   const updateMutation = useUpdateTaskMutation();
   const deleteMutation = useDeleteTaskMutation();
@@ -116,8 +120,16 @@ export function SelectedDateTaskList({ selectedDate }: SelectedDateTaskListProps
         isDeleting={deleteMutation.isPending}
       />
 
-      <div className="flex min-h-0 flex-1 flex-col border-t border-sky-300/30 bg-white p-3 text-sky-50">
-        <p className="mb-2 px-2 text-sm font-semibold uppercase tracking-[0.08em] text-sky-700">
+      <div
+        className={`flex flex-col min-h-0 flex-1 ${
+          isMobileView ? "" : "bg-white p-3 border-t border-sky-300/30"
+        }`}
+      >
+        <p
+          className={`mb-2 text-sm font-semibold uppercase tracking-[0.08em] ${
+            isMobileView ? "text-white" : "px-2 text-sky-700"
+          }`}
+        >
           {formatSelectedDateLabel(selectedDate)} ({dateTasks.length})
         </p>
 

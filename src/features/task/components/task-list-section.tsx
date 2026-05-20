@@ -1,6 +1,7 @@
 import { DeleteConfirmDialog } from "@/features/task/components/delete-confirm-dialog";
 import { TaskCard } from "@/features/task/components/task-card";
 import { TaskItem, TaskSortOption } from "@/features/task/types";
+import { ArrowUpDown } from "lucide-react";
 import { useState } from "react";
 
 type TaskListSectionProps = Readonly<{
@@ -47,13 +48,16 @@ export function TaskListSection({
 
   return (
     <div className="flex-1 overflow-hidden font-sans">
-      <section className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl bg-sky-950/45 p-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-sky-100/80">
+      <section className="relative flex h-full min-h-0 flex-col overflow-hidden md:rounded-xl md:bg-sky-950/45 md:p-4">
+        <div className="mb-3 flex items-center justify-between gap-2 md:gap-3">
+          <h2 className="text-mc font-bold uppercase tracking-[0.12em] text-white">
             {title}
           </h2>
-          <div className="flex items-center gap-2">
-            <label className="text-xs font-medium text-sky-100/75" htmlFor="task-title-filter">
+          <div className="flex flex-wrap items-center gap-2">
+            <label
+              className="sr-only md:not-sr-only md:text-xs md:font-medium md:text-sky-100/75"
+              htmlFor="task-title-filter"
+            >
               Search
             </label>
             <input
@@ -61,22 +65,32 @@ export function TaskListSection({
               value={titleFilter}
               onChange={(event) => onTitleFilterChange(event.target.value)}
               placeholder="Search by title or desc..."
-              className="w-40 rounded-md border border-sky-100/20 bg-sky-900/70 px-2 py-1 text-xs font-medium text-sky-50 outline-none placeholder:text-sky-200/50 focus:border-sky-300"
+              className="h-8 w-32 rounded-md border border-sky-100/20 bg-sky-900/70 px-2 text-xs font-medium text-sky-50 outline-none placeholder:text-sky-200/50 focus:border-sky-300 sm:w-40"
             />
-            <label className="text-xs font-medium text-sky-100/75" htmlFor="task-sort-select">
-              Sort by
-            </label>
-            <select
-              id="task-sort-select"
-              value={sortBy}
-              onChange={(event) => onSortChange(event.target.value as TaskSortOption)}
-              className="rounded-md border border-sky-100/20 bg-sky-900/70 px-2 py-1 text-xs font-medium text-sky-50 outline-none focus:border-sky-300"
+            <label
+              className="sr-only md:not-sr-only md:text-xs md:font-medium md:text-sky-100/75"
+              htmlFor="task-sort-select"
             >
-              <option value="dueDate">Due date</option>
-              <option value="title">Title</option>
-              <option value="description">Description</option>
-              <option value="priority">Priority</option>
-            </select>
+              Sort
+            </label>
+            <div className="relative h-8 w-8 md:h-auto md:w-auto">
+              <ArrowUpDown
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-sky-100/75 md:left-2 md:translate-x-0"
+              />
+              <select
+                id="task-sort-select"
+                aria-label="Sort tasks"
+                value={sortBy}
+                onChange={(event) => onSortChange(event.target.value as TaskSortOption)}
+                className="h-8 w-8 cursor-pointer appearance-none rounded-md border border-sky-100/20 bg-sky-900/70 p-0 text-transparent outline-none focus:border-sky-300 md:h-auto md:w-auto md:py-1 md:pl-7 md:pr-2 md:text-xs md:font-medium md:text-sky-50"
+              >
+                <option value="dueDate">Due date</option>
+                <option value="title">Title</option>
+                <option value="description">Description</option>
+                <option value="priority">Priority</option>
+              </select>
+            </div>
           </div>
         </div>
 

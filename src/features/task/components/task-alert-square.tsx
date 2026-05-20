@@ -16,6 +16,7 @@ type TaskAlertSquareProps = Readonly<{
   onClick: () => void;
   forceActiveStyle?: boolean;
   alwaysShowView?: boolean;
+  isMobileView?: boolean;
 }>;
 
 const toneClasses: Record<TaskAlertTone, string> = {
@@ -84,9 +85,12 @@ export function TaskAlertSquare({
   onClick,
   forceActiveStyle = false,
   alwaysShowView = false,
+  isMobileView = false,
 }: TaskAlertSquareProps) {
   const ToneIcon = toneIcons[tone];
   const useActiveStyle = forceActiveStyle || isActive;
+  const shouldStackIconOverView = isMobileView && toneLabels[tone].length > 8;
+  const shouldShowView = !isActive || alwaysShowView;
 
   return (
     <button
@@ -96,26 +100,42 @@ export function TaskAlertSquare({
     >
       <div className="flex items-start justify-between gap-2">
         <p className="text-xs font-bold uppercase tracking-wide opacity-70">{toneLabels[tone]}</p>
-        <span
-          className={`rounded-md p-1 ring-1 ${
-            useActiveStyle ? "bg-black/20 ring-white/25" : "bg-white/90 ring-black/10"
-          }`}
-        >
-          <ToneIcon
-            size={16}
-            className={useActiveStyle ? activeToneIconClassName[tone] : toneIconClassName[tone]}
-          />
-        </span>
+        {shouldStackIconOverView ? null : (
+          <span
+            className={`rounded-md p-1 ring-1 ${
+              useActiveStyle ? "bg-black/20 ring-white/25" : "bg-white/90 ring-black/10"
+            }`}
+          >
+            <ToneIcon
+              size={16}
+              className={useActiveStyle ? activeToneIconClassName[tone] : toneIconClassName[tone]}
+            />
+          </span>
+        )}
       </div>
       <div className="flex items-end justify-between gap-2">
         <p className="text-3xl font-bold tabular-nums">{count}</p>
-        {isActive && !alwaysShowView ? null : (
-          <span
-            className={`rounded-md px-2 py-1 text-[11px] font-semibold transition ${toneViewButtonClassName[tone]}`}
-          >
-            View
-          </span>
-        )}
+        <div className="flex flex-col items-end gap-1">
+          {shouldStackIconOverView ? (
+            <span
+              className={`rounded-md p-1 ring-1 ${
+                useActiveStyle ? "bg-black/20 ring-white/25" : "bg-white/90 ring-black/10"
+              }`}
+            >
+              <ToneIcon
+                size={16}
+                className={useActiveStyle ? activeToneIconClassName[tone] : toneIconClassName[tone]}
+              />
+            </span>
+          ) : null}
+          {shouldShowView ? (
+            <span
+              className={`rounded-md px-2 py-1 text-[11px] font-semibold transition ${toneViewButtonClassName[tone]}`}
+            >
+              View
+            </span>
+          ) : null}
+        </div>
       </div>
     </button>
   );

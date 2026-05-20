@@ -5,13 +5,13 @@ import { memo } from "react";
 
 const priorityArticleClassName: Record<TaskItem["priority"], string> = {
   LOW: "border-emerald-200 bg-emerald-50 text-emerald-950",
-  MEDIUM: "border-amber-200 bg-amber-50 text-amber-950",
+  MEDIUM: "border-yellow-200 bg-yellow-50 text-yellow-950",
   HIGH: "border-rose-200 bg-rose-50 text-rose-950",
 };
 
 const priorityDetailButtonClassName: Record<TaskItem["priority"], string> = {
   LOW: "border-emerald-200/60 bg-emerald-100/60 text-emerald-900 hover:bg-emerald-100",
-  MEDIUM: "border-amber-200/60 bg-amber-100/60 text-amber-900 hover:bg-amber-100",
+  MEDIUM: "border-yellow-200/60 bg-yellow-100/60 text-yellow-900 hover:bg-yellow-100",
   HIGH: "border-rose-200/60 bg-rose-100/60 text-rose-900 hover:bg-rose-100",
 };
 

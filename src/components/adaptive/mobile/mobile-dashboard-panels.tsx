@@ -1,18 +1,17 @@
 "use client";
 
-import { LogoutButton } from "@/components/shared/logout-button";
 import { MonthCalendar } from "@/components/shared/month-calendar";
 import { PreviewTaskCard } from "@/components/shared/task-card";
 import { SelectedDateTaskList } from "@/features/task/components/selected-date-task-list";
 import { TaskAlertSquare, type TaskAlertTone } from "@/features/task/components/task-alert-square";
 import { TaskManager } from "@/features/task/components/task-manager";
 import { TaskModal } from "@/features/task/components/task-modal";
+import type { TaskItem } from "@/features/task/types";
 import { isDueTodayDate, isOverdueDueDate } from "@/features/task/utils";
 import { useTasksContext } from "@/providers/TasksProvider";
 import { CalendarDays, Home, Plus, SquareKanban, UserCircle2 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import type { TaskItem } from "@/features/task/types";
 
 type MobileTab = "home" | "tasks" | "calendar" | "profile";
 
@@ -103,6 +102,31 @@ export function MobileDashboardPanels({
   ];
 
   const [taskBeingEdited, setTaskBeingEdited] = useState<TaskItem | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    setLogoutError(null);
+
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        setLogoutError("Logout failed. Please try again.");
+        setIsLoggingOut(false);
+        return;
+      }
+
+      router.push("/login");
+      router.refresh();
+    } catch {
+      setLogoutError("Logout failed. Please try again.");
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <div className="flex min-h-0 flex-1 flex-col md:hidden">
@@ -127,6 +151,7 @@ export function MobileDashboardPanels({
                   tone={item.tone}
                   count={item.count}
                   isActive={activeGrupTasks === item.tone}
+                  isMobileView
                   forceActiveStyle
                   alwaysShowView
                   onClick={() => handleAlertClick(item.tone)}
@@ -197,32 +222,41 @@ export function MobileDashboardPanels({
 
         {activeTab === "calendar" ? (
           <div className="flex flex-col gap-3">
+            <h3 className="text-md font-bold uppercase text-white">Calendar</h3>
             <div className="overflow-hidden rounded-2xl border border-sky-300/30 bg-white/95">
               <MonthCalendar
                 selectedDate={selectedDate}
                 onSelectedDateChange={onSelectedDateChange}
               />
             </div>
-            <div className="min-h-0 overflow-hidden rounded-2xl border border-sky-300/30 bg-white/95">
-              <SelectedDateTaskList selectedDate={selectedDate} />
+            <div className="min-h-0 overflow-hidden">
+              <SelectedDateTaskList selectedDate={selectedDate} isMobileView />
             </div>
           </div>
         ) : null}
 
         {activeTab === "profile" ? (
-          <div className="flex flex-col gap-4">
-            <div className="rounded-2xl border border-sky-300/30 bg-sky-900/40 p-4 text-white backdrop-blur-sm">
-              <div className="flex items-center gap-3">
-                <span className="grid h-12 w-12 place-items-center rounded-xl bg-sky-700">
-                  <UserCircle2 size={24} />
+          <div className="flex min-h-[calc(100dvh-8.5rem)] flex-col">
+            <div className="flex h-full flex-1 flex-col rounded-2xl border border-sky-300/30 bg-white p-5 text-sky-700 backdrop-blur-sm">
+              <div className="flex flex-1 flex-col items-center justify-center text-center">
+                <span className="grid h-28 w-28 place-items-center rounded-full border-4 border-sky-700 bg-white">
+                  <UserCircle2 size={60} />
                 </span>
-                <div>
-                  <p className="font-semibold">{getDisplayName(userEmail)}</p>
-                  <p className="text-sm text-sky-100/70">{userEmail}</p>
-                </div>
+                <p className="mt-4 text-lg font-semibold">{getDisplayName(userEmail)}</p>
+                <p className="mt-1 text-sm text-sky-900/80">{userEmail}</p>
               </div>
-              <div className="mt-4">
-                <LogoutButton userEmail={userEmail} />
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="block w-full text-center text-sm font-semibold uppercase tracking-[0.08em] text-sky-700 transition hover:text-sky-900 disabled:cursor-not-allowed disabled:text-sky-400"
+                >
+                  {isLoggingOut ? "Signing out..." : "Logout"}
+                </button>
+                {logoutError ? (
+                  <p className="mt-2 text-center text-xs text-rose-700">{logoutError}</p>
+                ) : null}
               </div>
             </div>
           </div>
@@ -234,7 +268,7 @@ export function MobileDashboardPanels({
         <button
           type="button"
           data-open-create-task-modal="true"
-          className="fixed right-5 bottom-24 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-600 text-white shadow-lg shadow-sky-900/40 transition hover:bg-sky-500"
+          className="fixed right-5 bottom-24 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/70 bg-sky-500 text-white ring-4 ring-sky-950/30 shadow-xl shadow-black/35 transition hover:bg-sky-400 hover:shadow-black/45 active:scale-95"
           aria-label="Create task"
         >
           <Plus size={20} />
