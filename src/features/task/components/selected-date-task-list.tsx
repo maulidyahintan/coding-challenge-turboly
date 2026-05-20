@@ -3,7 +3,9 @@
 import { TaskModal } from "@/features/task/components/task-modal";
 import type { TaskItem } from "@/features/task/types";
 import { readTaskPayload, toDateInputValue, validateTaskPayload } from "@/features/task/utils";
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import { useUpdateTaskMutation } from "@/hooks/useTasksMutation";
+import { useTasksContext } from "@/providers/TasksProvider";
+import { SyntheticEvent, useMemo, useState } from "react";
 
 type SelectedDateTaskListProps = Readonly<{
   selectedDate: Date | undefined;
@@ -44,56 +46,10 @@ function formatSelectedDateLabel(date: Date | undefined): string {
 }
 
 export function SelectedDateTaskList({ selectedDate }: SelectedDateTaskListProps) {
-  const [tasks, setTasks] = useState<TaskItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const { tasks, isLoading, error } = useTasksContext();
+  const updateMutation = useUpdateTaskMutation();
   const [updateErrorMessage, setUpdateErrorMessage] = useState<string | null>(null);
   const [taskBeingEdited, setTaskBeingEdited] = useState<TaskItem | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadTasks = async () => {
-      const response = await fetch("/api/tasks", { cache: "no-store" });
-      const result = (await response.json().catch(() => null)) as {
-        tasks?: TaskItem[];
-        message?: string;
-      } | null;
-
-      if (!isMounted) {
-        return;
-      }
-
-      if (!response.ok) {
-        setErrorMessage(result?.message ?? "Failed to load tasks.");
-        setIsLoading(false);
-        return;
-      }
-
-      setTasks(result?.tasks ?? []);
-      setErrorMessage(null);
-      setIsLoading(false);
-    };
-
-    void loadTasks();
-
-    const intervalId = globalThis.setInterval(() => {
-      void loadTasks();
-    }, 10000);
-
-    const handleFocus = () => {
-      void loadTasks();
-    };
-
-    window.addEventListener("focus", handleFocus);
-
-    return () => {
-      isMounted = false;
-      globalThis.clearInterval(intervalId);
-      window.removeEventListener("focus", handleFocus);
-    };
-  }, []);
 
   const dateTasks = useMemo(() => {
     if (!selectedDate) {
@@ -111,7 +67,6 @@ export function SelectedDateTaskList({ selectedDate }: SelectedDateTaskListProps
     }
 
     setUpdateErrorMessage(null);
-    setIsUpdating(true);
 
     const form = event.currentTarget;
     const payload = readTaskPayload(new FormData(form));
@@ -119,32 +74,15 @@ export function SelectedDateTaskList({ selectedDate }: SelectedDateTaskListProps
 
     if (validationError) {
       setUpdateErrorMessage(validationError);
-      setIsUpdating(false);
       return;
     }
 
-    const response = await fetch(`/api/tasks/${taskBeingEdited.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const result = (await response.json().catch(() => null)) as {
-      task?: TaskItem;
-      message?: string;
-    } | null;
-
-    if (!response.ok || !result?.task) {
-      setUpdateErrorMessage(result?.message ?? "Failed to update task.");
-      setIsUpdating(false);
-      return;
+    try {
+      await updateMutation.mutateAsync({ id: taskBeingEdited.id, payload });
+      setTaskBeingEdited(null);
+    } catch (err) {
+      setUpdateErrorMessage(err instanceof Error ? err.message : "Failed to update task.");
     }
-
-    setTasks((currentTasks) =>
-      currentTasks.map((task) => (task.id === result.task?.id ? result.task : task))
-    );
-    setTaskBeingEdited(null);
-    setIsUpdating(false);
   };
 
   return (
@@ -152,7 +90,7 @@ export function SelectedDateTaskList({ selectedDate }: SelectedDateTaskListProps
       <TaskModal
         title="Update Task"
         isOpen={Boolean(taskBeingEdited)}
-        isSubmitting={isUpdating}
+        isSubmitting={updateMutation.isPending}
         isCompleted={taskBeingEdited?.completed}
         submitLabel="Save Changes"
         errorMessage={updateErrorMessage}
@@ -183,18 +121,20 @@ export function SelectedDateTaskList({ selectedDate }: SelectedDateTaskListProps
             <p className="rounded-md bg-white/90 px-3 py-2 text-sm text-slate-700">Loading...</p>
           ) : null}
 
-          {errorMessage ? (
-            <p className="rounded-md bg-rose-100 px-3 py-2 text-sm text-rose-700">{errorMessage}</p>
+          {error ? (
+            <p className="rounded-md bg-rose-100 px-3 py-2 text-sm text-rose-700">
+              {error.message}
+            </p>
           ) : null}
 
-          {!isLoading && !errorMessage && dateTasks.length === 0 ? (
+          {!isLoading && !error && dateTasks.length === 0 ? (
             <p className="rounded-md bg-white/90 px-3 py-2 text-sm text-slate-700">
               No task on this date.
             </p>
           ) : null}
 
           {!isLoading &&
-            !errorMessage &&
+            !error &&
             dateTasks.map((task) => (
               <article
                 key={task.id}
