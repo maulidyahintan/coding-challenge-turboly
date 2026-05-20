@@ -1,7 +1,10 @@
+import { DeleteConfirmDialog } from "@/features/task/components/delete-confirm-dialog";
 import { TaskCard } from "@/features/task/components/task-card";
 import { TaskItem, TaskSortOption } from "@/features/task/types";
+import { useState } from "react";
 
 type TaskListSectionProps = Readonly<{
+  title: string;
   tasks: TaskItem[];
   isLoading: boolean;
   errorMessage: string | null;
@@ -18,6 +21,7 @@ type TaskListSectionProps = Readonly<{
 }>;
 
 export function TaskListSection({
+  title,
   tasks,
   isLoading,
   errorMessage,
@@ -32,12 +36,23 @@ export function TaskListSection({
   onDeleteTask,
   onToggleCompleteTask,
 }: TaskListSectionProps) {
+  const [taskPendingDelete, setTaskPendingDelete] = useState<TaskItem | null>(null);
+
+  const handleConfirmDelete = () => {
+    if (!taskPendingDelete) {
+      return;
+    }
+
+    onDeleteTask(taskPendingDelete);
+    setTaskPendingDelete(null);
+  };
+
   return (
     <div className="flex-1 overflow-hidden font-sans">
-      <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl bg-sky-950/45 p-4">
+      <section className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl bg-sky-950/45 p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-sky-100/80">
-            Tasks
+            {title}
           </h2>
           <div className="flex items-center gap-2">
             <label className="text-xs font-medium text-sky-100/75" htmlFor="task-title-filter">
@@ -64,9 +79,6 @@ export function TaskListSection({
               <option value="description">Description</option>
               <option value="priority">Priority</option>
             </select>
-            <span className="rounded-full bg-sky-100/15 px-2 py-1 text-xs font-medium text-sky-100">
-              Open: {totalOpenTasks}
-            </span>
           </div>
         </div>
 
@@ -96,13 +108,24 @@ export function TaskListSection({
                   key={task.id}
                   task={task}
                   onEdit={onEditTask}
-                  onDelete={onDeleteTask}
+                  onDelete={(selectedTask) => setTaskPendingDelete(selectedTask)}
                   onToggleComplete={onToggleCompleteTask}
                   isDeleting={deletingTaskId === task.id}
                   isCompleting={completingTaskId === task.id}
                 />
               ))}
         </div>
+
+        {taskPendingDelete ? (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/45 p-4">
+            <DeleteConfirmDialog
+              description={`"${taskPendingDelete.title}" will be permanently deleted.`}
+              isPending={Boolean(deletingTaskId)}
+              onCancel={() => setTaskPendingDelete(null)}
+              onConfirm={handleConfirmDelete}
+            />
+          </div>
+        ) : null}
       </section>
     </div>
   );

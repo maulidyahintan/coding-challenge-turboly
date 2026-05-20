@@ -6,7 +6,7 @@ import { useTasksContext } from "@/providers/TasksProvider";
 import { useMemo } from "react";
 
 export function TaskAlertsSection() {
-  const { tasks } = useTasksContext();
+  const { tasks, activeGrupTasks, setActiveGrupTasks } = useTasksContext();
 
   const dueTodayCount = useMemo(
     () => tasks.filter((task) => !task.completed && isDueTodayDate(task.dueDate)).length,
@@ -24,11 +24,36 @@ export function TaskAlertsSection() {
 
   return (
     <div className="flex gap-3">
-      <TaskAlertSquare count={dueTodayCount} tone="dueToday" />
-      <TaskAlertSquare count={overdueCount} tone="overdue" />
-      <TaskAlertSquare count={openCount} tone="open" />
-      <TaskAlertSquare count={completedCount} tone="completed" />
-      <TaskAlertSquare count={tasks.length} tone="all" />
+      <TaskAlertSquare
+        count={dueTodayCount}
+        tone="dueToday"
+        isActive={activeGrupTasks === "dueToday"}
+        onClick={() => setActiveGrupTasks("dueToday")}
+      />
+      <TaskAlertSquare
+        count={overdueCount}
+        tone="overdue"
+        isActive={activeGrupTasks === "overdue"}
+        onClick={() => setActiveGrupTasks("overdue")}
+      />
+      <TaskAlertSquare
+        count={openCount}
+        tone="open"
+        isActive={activeGrupTasks === "open"}
+        onClick={() => setActiveGrupTasks("open")}
+      />
+      <TaskAlertSquare
+        count={completedCount}
+        tone="completed"
+        isActive={activeGrupTasks === "completed"}
+        onClick={() => setActiveGrupTasks("completed")}
+      />
+      <TaskAlertSquare
+        count={tasks.length}
+        tone="all"
+        isActive={activeGrupTasks === "all"}
+        onClick={() => setActiveGrupTasks("all")}
+      />
     </div>
   );
 }

@@ -5,12 +5,15 @@ import { TaskModal } from "@/features/task/components/task-modal";
 import type { TaskItem, TaskSortOption } from "@/features/task/types";
 import {
   filterTasksByQuery,
+  isDueTodayDate,
+  isOverdueDueDate,
   readTaskPayload,
   sortTasks,
   toDateInputValue,
   validateTaskPayload,
 } from "@/features/task/utils";
 import {
+  useCompleteTaskMutation,
   useCreateTaskMutation,
   useDeleteTaskMutation,
   useUpdateTaskMutation,
@@ -19,10 +22,11 @@ import { useTasksContext } from "@/providers/TasksProvider";
 import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 
 export function TaskManager() {
-  const { tasks, isLoading, error } = useTasksContext();
+  const { tasks, isLoading, error, activeGrupTasks } = useTasksContext();
   const createMutation = useCreateTaskMutation();
   const updateMutation = useUpdateTaskMutation();
   const deleteMutation = useDeleteTaskMutation();
+  const completeMutation = useCompleteTaskMutation();
 
   const [sortBy, setSortBy] = useState<TaskSortOption>("dueDate");
   const [titleFilter, setTitleFilter] = useState("");
@@ -102,9 +106,55 @@ export function TaskManager() {
     }
   };
 
-  const totalOpenTasks = useMemo(() => tasks.filter((task) => !task.completed).length, [tasks]);
+  const handleToggleComplete = async (task: TaskItem) => {
+    try {
+      await completeMutation.mutateAsync({ id: task.id, completed: !task.completed });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  const filteredTasks = useMemo(() => filterTasksByQuery(tasks, titleFilter), [tasks, titleFilter]);
+  const groupedTasks = useMemo(() => {
+    switch (activeGrupTasks) {
+      case "dueToday":
+        return tasks.filter((task) => !task.completed && isDueTodayDate(task.dueDate));
+      case "overdue":
+        return tasks.filter((task) => !task.completed && isOverdueDueDate(task.dueDate));
+      case "open":
+        return tasks.filter((task) => !task.completed);
+      case "completed":
+        return tasks.filter((task) => task.completed);
+      case "all":
+      default:
+        return tasks;
+    }
+  }, [tasks, activeGrupTasks]);
+
+  const sectionTitle = useMemo(() => {
+    switch (activeGrupTasks) {
+      case "dueToday":
+        return "Due Today Tasks";
+      case "overdue":
+        return "Overdue Tasks";
+      case "open":
+        return "Open Tasks";
+      case "completed":
+        return "Completed Tasks";
+      case "all":
+      default:
+        return "All Tasks";
+    }
+  }, [activeGrupTasks]);
+
+  const totalOpenTasks = useMemo(
+    () => groupedTasks.filter((task) => !task.completed).length,
+    [groupedTasks]
+  );
+
+  const filteredTasks = useMemo(
+    () => filterTasksByQuery(groupedTasks, titleFilter),
+    [groupedTasks, titleFilter]
+  );
 
   const displayedTasks = useMemo(() => sortTasks(filteredTasks, sortBy), [filteredTasks, sortBy]);
 
@@ -145,9 +195,19 @@ export function TaskManager() {
           setTaskBeingEdited(null);
         }}
         onSubmit={handleUpdate}
+        onDelete={
+          taskBeingEdited
+            ? () => {
+                handleDelete(taskBeingEdited);
+                setTaskBeingEdited(null);
+              }
+            : undefined
+        }
+        isDeleting={deleteMutation.isPending}
       />
 
       <TaskListSection
+        title={sectionTitle}
         tasks={displayedTasks}
         isLoading={isLoading}
         errorMessage={error?.message ?? null}
@@ -155,7 +215,7 @@ export function TaskManager() {
         sortBy={sortBy}
         titleFilter={titleFilter}
         deletingTaskId={deleteMutation.isPending ? "pending" : null}
-        completingTaskId={null}
+        completingTaskId={completeMutation.isPending ? "pending" : null}
         onSortChange={setSortBy}
         onTitleFilterChange={setTitleFilter}
         onEditTask={(task) => {
@@ -163,7 +223,7 @@ export function TaskManager() {
           setTaskBeingEdited(task);
         }}
         onDeleteTask={handleDelete}
-        onToggleCompleteTask={() => {}}
+        onToggleCompleteTask={handleToggleComplete}
       />
     </>
   );

@@ -3,7 +3,7 @@
 import { MonthCalendar } from "@/components/shared/month-calendar";
 import { SelectedDateTaskList } from "@/features/task/components/selected-date-task-list";
 import { TaskAlertsSection } from "@/features/task/components/task-alerts-section";
-import { TaskManager } from "@/features/task/task-manager";
+import { TaskManager } from "@/features/task/components/task-manager";
 import { useState } from "react";
 
 export function DashboardPanels() {
@@ -17,7 +17,7 @@ export function DashboardPanels() {
           <SelectedDateTaskList selectedDate={selectedDate} />
         </section>
 
-        <section className="flex flex-col gap-4 h-full min-h-0 w-full flex-1 overflow-hidden rounded-2xl">
+        <section className="flex flex-col gap-4 h-full min-h-0 w-full flex-1 overflow-hidden">
           <TaskAlertsSection />
           <TaskManager />
         </section>

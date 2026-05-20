@@ -1,5 +1,5 @@
-import { DashboardPanels } from "@/features/task/dashboard-panels";
 import { LogoutButton } from "@/components/shared/logout-button";
+import { DashboardPanels } from "@/features/task/dashboard-panels";
 import { readServerSession } from "@/lib/auth/server-session";
 import { Plus } from "lucide-react";
 import { redirect } from "next/navigation";
@@ -13,7 +13,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="flex h-screen flex-col gap-4 bg-linear-to-b from-sky-700 via-sky-600 to-sky-500 px-3 py-4 sm:px-5 sm:py-6">
-      <nav className="mx-auto flex w-full items-center justify-between gap-3 rounded-2xl border border-sky-300/30 bg-sky-900/35 px-4 py-3 backdrop-blur-sm sm:px-5">
+      <nav className="relative z-50 mx-auto flex w-full items-center justify-between gap-3 rounded-2xl border border-sky-300/30 bg-sky-900/35 px-4 py-3 backdrop-blur-sm sm:px-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-100/80">
             Turboly Challenge
@@ -29,7 +29,7 @@ export default async function DashboardPage() {
             <Plus size={16} />
             Add Task
           </button>
-          <LogoutButton />
+          <LogoutButton userEmail={session.user.email} />
         </div>
       </nav>
 

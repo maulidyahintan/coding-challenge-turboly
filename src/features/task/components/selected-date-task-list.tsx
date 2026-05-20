@@ -3,7 +3,7 @@
 import { TaskModal } from "@/features/task/components/task-modal";
 import type { TaskItem } from "@/features/task/types";
 import { readTaskPayload, toDateInputValue, validateTaskPayload } from "@/features/task/utils";
-import { useUpdateTaskMutation } from "@/hooks/useTasksMutation";
+import { useDeleteTaskMutation, useUpdateTaskMutation } from "@/hooks/useTasksMutation";
 import { useTasksContext } from "@/providers/TasksProvider";
 import { SyntheticEvent, useMemo, useState } from "react";
 
@@ -48,6 +48,7 @@ function formatSelectedDateLabel(date: Date | undefined): string {
 export function SelectedDateTaskList({ selectedDate }: SelectedDateTaskListProps) {
   const { tasks, isLoading, error } = useTasksContext();
   const updateMutation = useUpdateTaskMutation();
+  const deleteMutation = useDeleteTaskMutation();
   const [updateErrorMessage, setUpdateErrorMessage] = useState<string | null>(null);
   const [taskBeingEdited, setTaskBeingEdited] = useState<TaskItem | null>(null);
 
@@ -109,6 +110,21 @@ export function SelectedDateTaskList({ selectedDate }: SelectedDateTaskListProps
           setTaskBeingEdited(null);
         }}
         onSubmit={handleUpdate}
+        onDelete={
+          taskBeingEdited
+            ? async () => {
+                try {
+                  await deleteMutation.mutateAsync(taskBeingEdited.id);
+                  setTaskBeingEdited(null);
+                } catch (err) {
+                  setUpdateErrorMessage(
+                    err instanceof Error ? err.message : "Failed to delete task."
+                  );
+                }
+              }
+            : undefined
+        }
+        isDeleting={deleteMutation.isPending}
       />
 
       <div className="flex min-h-0 flex-1 flex-col border-t border-sky-300/30 bg-white p-3 text-sky-50">

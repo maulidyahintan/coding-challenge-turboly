@@ -1,8 +1,10 @@
 "use client";
 
 import { FormLabel } from "@/components/ui/form-label";
-import { TaskItem } from "@/features/task/types";
-import { SyntheticEvent } from "react";
+import { DeleteConfirmDialog } from "@/features/task/components/delete-confirm-dialog";
+import type { TaskItem } from "@/features/task/types";
+import { Trash2 } from "lucide-react";
+import { SyntheticEvent, useState } from "react";
 import { createPortal } from "react-dom";
 
 type TaskModalProps = Readonly<{
@@ -17,6 +19,8 @@ type TaskModalProps = Readonly<{
   isCompleted?: boolean;
   onClose: () => void;
   onSubmit: (event: SyntheticEvent<HTMLFormElement>) => void;
+  onDelete?: () => void;
+  isDeleting?: boolean;
 }>;
 
 export function TaskModal({
@@ -29,20 +33,26 @@ export function TaskModal({
   isCompleted,
   onClose,
   onSubmit,
+  onDelete,
+  isDeleting = false,
 }: TaskModalProps) {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const isUpdateMode = initialValues !== undefined;
+
   if (!isOpen || typeof document === "undefined") {
     return null;
   }
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4">
-      <div className="w-full max-w-md rounded-xl border border-sky-200/30 bg-white p-4 font-sans shadow-2xl">
+      <div className="relative w-full max-w-md rounded-xl border border-sky-200/30 bg-white p-4 font-sans shadow-2xl">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-slate-900">{title}</h2>
           <button
             type="button"
             onClick={() => {
-              if (!isSubmitting) {
+              if (!isSubmitting && !isDeleting) {
+                setShowDeleteConfirm(false);
                 onClose();
               }
             }}
@@ -92,7 +102,7 @@ export function TaskModal({
                 aria-required="true"
                 type="date"
                 name="dueDate"
-                defaultValue={initialValues?.dueDate ?? ""}
+                defaultValue={initialValues?.dueDate ?? new Date().toISOString().split("T")[0]}
                 className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-sans text-sm text-slate-900 outline-none focus:border-sky-500"
               />
             </FormLabel>
@@ -124,21 +134,55 @@ export function TaskModal({
                   </span>
                 </label>
               </div>
-
-              <p className="mt-2 text-xs font-medium text-slate-600">
-                Slide to set status, then click Save Changes.
-              </p>
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-sky-300"
-          >
-            {isSubmitting ? "Saving..." : submitLabel}
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setShowDeleteConfirm(false);
+                onClose();
+              }}
+              disabled={isSubmitting || isDeleting}
+              className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting || isDeleting}
+              className="flex-1 rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-sky-300"
+            >
+              {isSubmitting ? "Saving..." : submitLabel}
+            </button>
+            {isUpdateMode && onDelete && !showDeleteConfirm ? (
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(true)}
+                disabled={isSubmitting || isDeleting}
+                className="inline-flex items-center justify-center rounded-md p-1 bg-slate-100 text-rose-600 transition hover:bg-rose-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Delete task"
+              >
+                <Trash2 size={18} />
+              </button>
+            ) : null}
+          </div>
         </form>
+
+        {showDeleteConfirm && isUpdateMode && onDelete ? (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/45 p-4">
+            <DeleteConfirmDialog
+              description={`"${title}" will be permanently deleted.`}
+              isPending={isDeleting}
+              onCancel={() => setShowDeleteConfirm(false)}
+              onConfirm={() => {
+                onDelete();
+                setShowDeleteConfirm(false);
+              }}
+            />
+          </div>
+        ) : null}
       </div>
     </div>,
     document.body

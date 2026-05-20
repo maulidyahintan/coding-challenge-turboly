@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { ChevronDown, LogOut, UserCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-export function LogoutButton() {
+type LogoutButtonProps = Readonly<{
+  userEmail: string;
+}>;
+
+export function LogoutButton({ userEmail }: LogoutButtonProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,13 +62,13 @@ export function LogoutButton() {
           <span className="block text-[11px] uppercase tracking-[0.12em] text-slate-500">
             Account
           </span>
-          <span className="block text-sm font-semibold">My Profile</span>
+          <span className="block truncate text-sm font-semibold">{userEmail}</span>
         </span>
         <ChevronDown size={16} className="text-slate-500" />
       </button>
 
       {isOpen ? (
-        <div className="absolute top-12 right-0 z-20 w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
+        <div className="absolute top-12 right-0 z-100 w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
           <button
             type="button"
             onClick={handleLogout}
