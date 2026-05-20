@@ -1,11 +1,9 @@
-import { compare, hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import type { LoginInput } from "@/lib/validations/auth";
+import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
 import type { SessionPayload } from "@/types/auth";
+import { compare, hash } from "bcryptjs";
 
-export async function authenticateUser(
-  input: LoginInput
-): Promise<SessionPayload | null> {
+export async function authenticateUser(input: LoginInput): Promise<SessionPayload | null> {
   const email = input.email.trim().toLowerCase();
 
   const user = await prisma.user.findUnique({
@@ -58,6 +56,39 @@ export async function authenticateGoogleUser(email: string): Promise<SessionPayl
       },
     });
   }
+
+  return {
+    user: {
+      id: user.id,
+      email: user.email,
+    },
+  };
+}
+
+export async function registerUser(input: RegisterInput): Promise<SessionPayload | null> {
+  const email = input.email.trim().toLowerCase();
+
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+
+  if (existingUser) {
+    return null;
+  }
+
+  const hashedPassword = await hash(input.password, 12);
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      password: hashedPassword,
+    },
+    select: {
+      id: true,
+      email: true,
+    },
+  });
 
   return {
     user: {

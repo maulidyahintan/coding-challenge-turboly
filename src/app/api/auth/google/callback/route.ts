@@ -1,11 +1,7 @@
+import { authenticateGoogleUser } from "@/lib/auth/service";
+import { createSessionToken, SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/session";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { authenticateGoogleUser } from "@/lib/auth/service";
-import {
-  createSessionToken,
-  SESSION_COOKIE_NAME,
-  sessionCookieOptions,
-} from "@/lib/auth/session";
 
 const GOOGLE_AUTH_STATE_COOKIE = "turboly_google_auth_state";
 
