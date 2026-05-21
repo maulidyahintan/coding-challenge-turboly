@@ -4,9 +4,9 @@ import { useLoginMutation } from "@/hooks/useAuthMutation";
 import { loginSchema } from "@/lib/validations/auth";
 import { Building2, Eye, EyeOff, KeyRound, Mail } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const loginMutation = useLoginMutation();
@@ -192,5 +192,13 @@ export default function LoginPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageContent />
+    </Suspense>
   );
 }
