@@ -56,8 +56,7 @@ function LoginPageContent() {
 
     try {
       await loginMutation.mutateAsync(parsedInput.data);
-      router.push("/dashboard");
-      router.refresh();
+      window.location.assign("/dashboard");
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Login failed.");
     }
