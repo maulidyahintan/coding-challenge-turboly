@@ -68,38 +68,44 @@ docs/screenshots/
 - Database: SQLite + Prisma ORM
 - Validation: Zod
 - Auth/session: bcryptjs + jose (JWT)
+- Testing: Jest 30, React Testing Library, jest-environment-jsdom
 
 ## Project Structure
 
 ```txt
 src/
-	app/
-		api/
-			auth/
-			tasks/
-		dashboard/
-		login/
-		register/
-		unauthorized/
-	components/
-		adaptive/
-			mobile/
-			tablet/
-			desktop/
-		shared/
-		ui/
-	features/
-		task/
-	hooks/
-	lib/
-		auth/
-		prisma/
-		validations/
-	providers/
-	types/
+  app/
+    api/
+      auth/       # login, register, logout, google OAuth routes
+      tasks/      # CRUD task routes
+    dashboard/    # dashboard page (server component)
+    login/
+    register/
+    unauthorized/
+  components/
+    adaptive/
+      desktop/dashboard/   # desktop two-panel layout
+      mobile/dashboard/    # mobile tab-based layout
+      tablet/dashboard/    # tablet sidebar layout
+    dashboard/
+      __tests__/           # unit tests for all dashboard components
+        section-calendar/
+        task/
+      section-calendar/    # month calendar + selected date task list
+      task/                # task card, alert square, list section, utils
+    ui/                    # shared UI primitives (DataStateMessage, FormLabel, etc.)
+  hooks/                   # useLogout, useTasksMutation, useTasksQuery, useAuthMutation
+  lib/
+    auth/                  # JWT session, server session, auth service
+    prisma/                # Prisma client singleton
+    validations/           # Zod schemas (auth, task, error)
+  providers/               # QueryClientProvider, TasksProvider
+  types/
 prisma/
-	schema.prisma
-middleware.ts
+  schema.prisma
+jest.config.mjs            # Jest configuration
+jest.setup.ts              # @testing-library/jest-dom setup
+middleware.ts              # route protection middleware
 ```
 
 ## Getting Started
@@ -145,10 +151,12 @@ Open `http://localhost:3000`.
 
 ## Scripts
 
-- `yarn dev` - run development server
-- `yarn build` - build production bundle
-- `yarn start` - run production server
-- `yarn lint` - run ESLint
+- `yarn dev` — run development server
+- `yarn build` — build production bundle
+- `yarn start` — run production server
+- `yarn lint` — run ESLint
+- `yarn test` — run all unit tests
+- `yarn test:watch` — run unit tests in watch mode
 
 ## Authentication Flow
 
@@ -197,22 +205,80 @@ All `/api/tasks/*` endpoints require valid session.
   - `priority`: `LOW | MEDIUM | HIGH`
   - `dueDate`: required date string
 
+## Unit Testing
+
+Tests are written with **Jest** and **React Testing Library**, following `@testing-library` best practices: query by accessible role/label, simulate real user interactions, and assert on visible outcomes.
+
+### Running tests
+
+```bash
+yarn test              # run all tests once
+yarn test:watch        # re-run on file changes
+```
+
+### Test location
+
+All unit tests for dashboard components live in:
+
+```txt
+src/components/dashboard/__tests__/
+  create-task-button.test.tsx
+  dashboard-branding.test.tsx
+  delete-confirm-dialog.test.tsx
+  logout-button.test.tsx
+  task-modal.test.tsx
+  task-modal-container.test.tsx
+  section-calendar/
+    month-calendar.test.tsx
+    preview-task-card.test.tsx
+    selected-date-task-list.test.tsx
+  task/
+    task-alert-square.test.tsx
+    task-alerts-section.test.tsx
+    task-card.test.tsx
+    task-list-section.test.tsx
+    utils.test.ts
+```
+
+**14 test suites — 95 tests — all passing.**
+
+### What is covered
+
+| Suite | Focus |
+|---|---|
+| `utils.test.ts` | Pure functions: `isOverdueDueDate`, `isDueTodayDate`, `sortTasks`, `filterTasksByQuery`, `readTaskPayload`, `validateTaskPayload` |
+| `task-alert-square` | Tone color CSS variable, click handler, active ring, View label visibility |
+| `task-card` | Render, overdue state, action callbacks, disabled state |
+| `task-list-section` | Loading / empty / error states, search, sort, delete confirm dialog flow |
+| `task-alerts-section` | 5 alert squares rendered via mocked context |
+| `preview-task-card` | Title, description, priority styles, Detail button |
+| `month-calendar` | DayPicker renders, selected date aria attribute |
+| `selected-date-task-list` | Date-based task filtering, no-date and empty states |
+| `create-task-button` | Render, click |
+| `dashboard-branding` | Static text, h1 heading |
+| `delete-confirm-dialog` | Confirm / cancel / pending state |
+| `task-modal` | Open/close, initial values, submit, delete confirm, task status toggle |
+| `task-modal-container` | Create mode via mocked context + mutations |
+| `logout-button` | Dropdown toggle, logout call, outside-click close |
+
+
+
 ## UI Adaptation Strategy
 
 The dashboard uses dedicated adaptive components instead of one monolithic layout:
 
-- Mobile: `src/components/adaptive/mobile/mobile-dashboard-panels.tsx`
-- Tablet: `src/components/adaptive/tablet/tablet-dashboard-panels.tsx`
-- Desktop: `src/components/adaptive/desktop/desktop-dashboard-panels.tsx`
+- Mobile: `src/components/adaptive/mobile/dashboard/index.tsx`
+- Tablet: `src/components/adaptive/tablet/dashboard/index.tsx`
+- Desktop: `src/components/adaptive/desktop/dashboard/index.tsx`
 
 This keeps device-specific behavior explicit and easier to maintain.
 
 ## What I Would Improve Next
 
-- Add unit/integration tests for auth and task route handlers
-- Add E2E scenarios for adaptive layout behavior
-- Add provider-based auth model for social login identities
-- Add CI pipeline gates for lint, typecheck, and tests
+- Add unit/integration tests for auth and task API route handlers
+- Add E2E scenarios for adaptive layout behavior across breakpoints
+- Add provider-based auth model for additional social login identities
+- Add CI pipeline gates for lint, typecheck, and test coverage thresholds
 
 ## Security Notes
 
