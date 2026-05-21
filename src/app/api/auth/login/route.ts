@@ -1,5 +1,6 @@
+import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
 import { authenticateUser } from "@/lib/auth/service";
-import { createSessionToken, SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/session";
+import { createSessionToken, sessionCookieOptions } from "@/lib/auth/session";
 import { loginSchema } from "@/lib/validations/auth";
 import { getFirstZodErrorMessage } from "@/lib/validations/error";
 import { cookies } from "next/headers";

@@ -1,7 +1,5 @@
-import { jwtVerify, SignJWT } from "jose";
 import type { SessionPayload } from "@/types/auth";
-
-export const SESSION_COOKIE_NAME = "turboly_session";
+import { jwtVerify, SignJWT } from "jose";
 
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7;
 
