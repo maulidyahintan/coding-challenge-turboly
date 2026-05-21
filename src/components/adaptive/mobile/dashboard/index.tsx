@@ -1,21 +1,51 @@
 "use client";
 
-import { MonthCalendar } from "@/components/shared/month-calendar";
-import { PreviewTaskCard } from "@/components/shared/task-card";
-import { SelectedDateTaskList } from "@/features/task/components/selected-date-task-list";
-import { TaskAlertSquare, type TaskAlertTone } from "@/features/task/components/task-alert-square";
-import { TaskManager } from "@/features/task/components/task-manager";
-import { TaskModal } from "@/features/task/components/task-modal";
-import type { TaskItem } from "@/features/task/types";
-import { isDueTodayDate, isOverdueDueDate } from "@/features/task/utils";
+import {
+  MonthCalendar,
+  PreviewTaskCard,
+  SelectedDateTaskList,
+} from "@/components/dashboard/section-calendar";
+import {
+  isDueTodayDate,
+  isOverdueDueDate,
+  TaskAlertSquare,
+  TaskAlertTone,
+  TaskManager,
+} from "@/components/dashboard/task";
+import { IconTabNav, type IconTabNavItem, UserAccountPanel } from "@/components/ui";
+import { useLogout } from "@/hooks/useLogout";
 import { useTasksContext } from "@/providers/TasksProvider";
 import { CalendarDays, Home, Plus, SquareKanban, UserCircle2 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
-type MobileTab = "home" | "tasks" | "calendar" | "profile";
+const MOBILE_TAB = {
+  HOME: "home",
+  TASKS: "tasks",
+  CALENDAR: "calendar",
+  PROFILE: "profile",
+} as const;
 
-const MOBILE_TABS = new Set<MobileTab>(["home", "tasks", "calendar", "profile"]);
+type MobileTab = (typeof MOBILE_TAB)[keyof typeof MOBILE_TAB];
+
+const MOBILE_TABS = new Set<MobileTab>(Object.values(MOBILE_TAB));
+
+const MOBILE_NAV_ITEMS: ReadonlyArray<IconTabNavItem<MobileTab>> = [
+  { tab: MOBILE_TAB.HOME, label: "Home", ariaLabel: "Show home", icon: Home },
+  { tab: MOBILE_TAB.TASKS, label: "Tasks", ariaLabel: "Show tasks", icon: SquareKanban },
+  {
+    tab: MOBILE_TAB.CALENDAR,
+    label: "Calendar",
+    ariaLabel: "Show calendar",
+    icon: CalendarDays,
+  },
+  {
+    tab: MOBILE_TAB.PROFILE,
+    label: "Profile",
+    ariaLabel: "Show profile",
+    icon: UserCircle2,
+  },
+];
 
 function isMobileTab(value: string | null): value is MobileTab {
   return value !== null && MOBILE_TABS.has(value as MobileTab);
@@ -48,13 +78,14 @@ export function MobileDashboardPanels({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const activeTab: MobileTab = isMobileTab(tabParam) ? tabParam : "home";
-  const { tasks, activeGrupTasks, setActiveGrupTasks } = useTasksContext();
+  const activeTab: MobileTab = isMobileTab(tabParam) ? tabParam : MOBILE_TAB.HOME;
+  const { tasks, activeGrupTasks, setActiveGrupTasks, openTaskModalCreate, openTaskModalEdit } =
+    useTasksContext();
 
   const setTabParam = (tab: MobileTab) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (tab === "home") {
+    if (tab === MOBILE_TAB.HOME) {
       params.delete("tab");
     } else {
       params.set("tab", tab);
@@ -91,53 +122,23 @@ export function MobileDashboardPanels({
 
   const handleAlertClick = (tone: TaskAlertTone) => {
     setActiveGrupTasks(tone);
-    setTabParam("tasks");
+    setTabParam(MOBILE_TAB.TASKS);
   };
 
-  const navItems: Array<{ tab: MobileTab; label: string; icon: typeof Home }> = [
-    { tab: "home", label: "Home", icon: Home },
-    { tab: "tasks", label: "Tasks", icon: SquareKanban },
-    { tab: "calendar", label: "Calendar", icon: CalendarDays },
-    { tab: "profile", label: "Profile", icon: UserCircle2 },
-  ];
-
-  const [taskBeingEdited, setTaskBeingEdited] = useState<TaskItem | null>(null);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [logoutError, setLogoutError] = useState<string | null>(null);
-
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    setLogoutError(null);
-
-    try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        setLogoutError("Logout failed. Please try again.");
-        setIsLoggingOut(false);
-        return;
-      }
-
-      router.push("/login");
-      router.refresh();
-    } catch {
-      setLogoutError("Logout failed. Please try again.");
-      setIsLoggingOut(false);
-    }
-  };
+  const { logout, isLoggingOut, logoutError } = useLogout();
+  const greeting = getGreeting();
+  const displayName = getDisplayName(userEmail);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col md:hidden">
       {/* Scrollable content area */}
       <div className="min-h-0 flex-1 overflow-y-auto pb-24">
-        {activeTab === "home" ? (
+        {activeTab === MOBILE_TAB.HOME ? (
           <div className="flex flex-col gap-4">
             <div className="text-white backdrop-blur-sm">
-              <p className="mt-24 text-2xl font-bold text-sky-100/75">{getGreeting()},</p>
+              <p className="mt-24 text-2xl font-bold text-sky-100/75">{greeting},</p>
               <h2 className="mt-1 text-4xl font-bold">
-                {getDisplayName(userEmail)}{" "}
+                {displayName}{" "}
                 <span role="img" aria-label="waving hand">
                   👋
                 </span>
@@ -164,7 +165,7 @@ export function MobileDashboardPanels({
                 <h3 className="text-md font-bold uppercase text-white">Recent Task</h3>
                 <button
                   type="button"
-                  onClick={() => setTabParam("tasks")}
+                  onClick={() => setTabParam(MOBILE_TAB.TASKS)}
                   className="text-xs font-semibold uppercase tracking-[0.08em] text-sky-100/80 transition hover:text-white"
                 >
                   See all
@@ -181,7 +182,7 @@ export function MobileDashboardPanels({
                     <PreviewTaskCard
                       key={task.id}
                       task={task}
-                      onDetail={() => setTaskBeingEdited(task)}
+                      onDetail={() => openTaskModalEdit(task)}
                     />
                   ))
                 )}
@@ -190,37 +191,13 @@ export function MobileDashboardPanels({
           </div>
         ) : null}
 
-        {/* Task Modal */}
-        <TaskModal
-          title="Update Task"
-          isOpen={Boolean(taskBeingEdited)}
-          isSubmitting={false}
-          isCompleted={taskBeingEdited?.completed ?? false}
-          submitLabel="Save Changes"
-          errorMessage={null}
-          initialValues={
-            taskBeingEdited
-              ? {
-                  title: taskBeingEdited.title,
-                  description: taskBeingEdited.description,
-                  priority: taskBeingEdited.priority,
-                  dueDate: taskBeingEdited.dueDate,
-                }
-              : undefined
-          }
-          onClose={() => setTaskBeingEdited(null)}
-          onSubmit={() => undefined}
-          onDelete={() => undefined}
-          isDeleting={false}
-        />
-
-        {activeTab === "tasks" ? (
+        {activeTab === MOBILE_TAB.TASKS ? (
           <div className="min-h-[60vh]">
             <TaskManager />
           </div>
         ) : null}
 
-        {activeTab === "calendar" ? (
+        {activeTab === MOBILE_TAB.CALENDAR ? (
           <div className="flex flex-col gap-3">
             <h3 className="text-md font-bold uppercase text-white">Calendar</h3>
             <div className="overflow-hidden rounded-2xl border border-sky-300/30 bg-white/95">
@@ -235,39 +212,25 @@ export function MobileDashboardPanels({
           </div>
         ) : null}
 
-        {activeTab === "profile" ? (
+        {activeTab === MOBILE_TAB.PROFILE ? (
           <div className="flex min-h-[calc(100dvh-8.5rem)] flex-col">
-            <div className="flex h-full flex-1 flex-col rounded-2xl border border-sky-300/30 bg-white p-5 text-sky-700 backdrop-blur-sm">
-              <div className="flex flex-1 flex-col items-center justify-center text-center">
-                <span className="grid h-28 w-28 place-items-center rounded-full border-4 border-sky-700 bg-white">
-                  <UserCircle2 size={60} />
-                </span>
-                <p className="mt-4 text-lg font-semibold">{getDisplayName(userEmail)}</p>
-                <p className="mt-1 text-sm text-sky-900/80">{userEmail}</p>
-              </div>
-              <div className="pt-4">
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="block w-full text-center text-sm font-semibold uppercase tracking-[0.08em] text-sky-700 transition hover:text-sky-900 disabled:cursor-not-allowed disabled:text-sky-400"
-                >
-                  {isLoggingOut ? "Signing out..." : "Logout"}
-                </button>
-                {logoutError ? (
-                  <p className="mt-2 text-center text-xs text-rose-700">{logoutError}</p>
-                ) : null}
-              </div>
-            </div>
+            <UserAccountPanel
+              variant="mobile-profile"
+              userEmail={userEmail}
+              displayName={displayName}
+              isLoggingOut={isLoggingOut}
+              logoutError={logoutError}
+              onLogout={logout}
+            />
           </div>
         ) : null}
       </div>
 
       {/* FAB — only visible on Tasks tab */}
-      {activeTab === "tasks" ? (
+      {activeTab === MOBILE_TAB.TASKS ? (
         <button
           type="button"
-          data-open-create-task-modal="true"
+          onClick={openTaskModalCreate}
           className="fixed right-5 bottom-24 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/70 bg-sky-500 text-white ring-4 ring-sky-950/30 shadow-xl shadow-black/35 transition hover:bg-sky-400 hover:shadow-black/45 active:scale-95"
           aria-label="Create task"
         >
@@ -276,21 +239,14 @@ export function MobileDashboardPanels({
       ) : null}
 
       {/* Bottom tab navigation */}
-      <nav className="fixed right-3 bottom-3 left-3 z-40 flex rounded-2xl border border-sky-200/30 bg-sky-950/90 p-2 backdrop-blur">
-        {navItems.map(({ tab, label, icon: Icon }) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setTabParam(tab)}
-            className={`flex flex-1 flex-col items-center rounded-lg py-2 text-[10px] font-semibold transition ${
-              activeTab === tab ? "bg-sky-100/25 text-sky-50" : "text-sky-100/75"
-            }`}
-          >
-            <Icon size={15} className="mb-0.5" />
-            {label}
-          </button>
-        ))}
-      </nav>
+      <IconTabNav
+        items={MOBILE_NAV_ITEMS}
+        activeTab={activeTab}
+        onTabChange={setTabParam}
+        ariaLabel="Mobile dashboard tabs"
+        className="fixed right-3 bottom-3 left-3 z-40 flex rounded-2xl border border-sky-200/30 bg-sky-950/90 p-2 backdrop-blur"
+        variant="bottom-nav"
+      />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { TaskAlertSquare } from "@/features/task/components/task-alert-square";
-import { isDueTodayDate, isOverdueDueDate } from "@/features/task/utils";
 import { useTasksContext } from "@/providers/TasksProvider";
 import { useMemo } from "react";
+import { TaskAlertSquare } from "./task-alert-square";
+import { isDueTodayDate, isOverdueDueDate } from "./utils";
 
 type TaskAlertsSectionProps = Readonly<{
   isTabletScrollable?: boolean;

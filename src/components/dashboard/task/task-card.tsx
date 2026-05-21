@@ -1,6 +1,6 @@
-import { TaskItem } from "@/features/task/types";
-import { isOverdueDueDate } from "@/features/task/utils";
 import { CheckCircle2, Circle, Loader2, Pencil, Trash2 } from "lucide-react";
+import { TaskItem } from "./types";
+import { isOverdueDueDate } from "./utils";
 
 const priorityBadgeStyle: Record<TaskItem["priority"], string> = {
   LOW: "bg-emerald-100 text-emerald-700",

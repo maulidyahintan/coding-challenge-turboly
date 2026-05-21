@@ -1,8 +1,10 @@
-import { DeleteConfirmDialog } from "@/features/task/components/delete-confirm-dialog";
-import { TaskCard } from "@/features/task/components/task-card";
-import { TaskItem, TaskSortOption } from "@/features/task/types";
+"use client";
+
 import { ArrowUpDown } from "lucide-react";
 import { useState } from "react";
+import { DeleteConfirmDialog } from "../delete-confirm-dialog";
+import { TaskCard } from "./task-card";
+import { TaskItem, TaskSortOption } from "./types";
 
 type TaskListSectionProps = Readonly<{
   title: string;
@@ -50,9 +52,7 @@ export function TaskListSection({
     <div className="flex-1 overflow-hidden font-sans">
       <section className="relative flex h-full min-h-0 flex-col overflow-hidden md:rounded-xl md:bg-sky-950/45 md:p-4">
         <div className="mb-3 flex items-center justify-between gap-2 md:gap-3">
-          <h2 className="text-mc font-bold uppercase tracking-[0.12em] text-white">
-            {title}
-          </h2>
+          <h2 className="text-mc font-bold uppercase tracking-[0.12em] text-white">{title}</h2>
           <div className="flex flex-wrap items-center gap-2">
             <label
               className="sr-only md:not-sr-only md:text-xs md:font-medium md:text-sky-100/75"

@@ -1,4 +1,4 @@
-import type { TaskFormPayload, TaskItem } from "@/features/task/types";
+import type { TaskFormPayload, TaskItem } from "@/components/dashboard/task";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useCreateTaskMutation = () => {

@@ -1,11 +1,11 @@
 "use client";
 
-import { FormLabel } from "@/components/ui/form-label";
-import { DeleteConfirmDialog } from "@/features/task/components/delete-confirm-dialog";
-import type { TaskItem } from "@/features/task/types";
-import { Trash2 } from "lucide-react";
+import { FormLabel } from "@/components/ui";
+import { Trash2, X } from "lucide-react";
 import { SyntheticEvent, useState } from "react";
 import { createPortal } from "react-dom";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
+import { TaskItem } from "./task/types";
 
 type TaskModalProps = Readonly<{
   title: string;
@@ -38,6 +38,17 @@ export function TaskModal({
 }: TaskModalProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const isUpdateMode = initialValues !== undefined;
+  const isBusy = isSubmitting || isDeleting;
+  const dueDateDefaultValue = initialValues?.dueDate ?? new Date().toISOString().split("T")[0];
+  const deleteTargetLabel = initialValues?.title ?? title;
+
+  const handleClose = () => {
+    if (isBusy) {
+      return;
+    }
+    setShowDeleteConfirm(false);
+    onClose();
+  };
 
   if (!isOpen || typeof document === "undefined") {
     return null;
@@ -50,15 +61,12 @@ export function TaskModal({
           <h2 className="text-base font-semibold text-slate-900">{title}</h2>
           <button
             type="button"
-            onClick={() => {
-              if (!isSubmitting && !isDeleting) {
-                setShowDeleteConfirm(false);
-                onClose();
-              }
-            }}
-            className="px-2 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+            onClick={handleClose}
+            disabled={isBusy}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label="Close task modal"
           >
-            X
+            <X size={16} />
           </button>
         </div>
 
@@ -102,7 +110,7 @@ export function TaskModal({
                 aria-required="true"
                 type="date"
                 name="dueDate"
-                defaultValue={initialValues?.dueDate ?? new Date().toISOString().split("T")[0]}
+                defaultValue={dueDateDefaultValue}
                 className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-sans text-sm text-slate-900 outline-none focus:border-sky-500"
               />
             </FormLabel>
@@ -140,18 +148,15 @@ export function TaskModal({
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => {
-                setShowDeleteConfirm(false);
-                onClose();
-              }}
-              disabled={isSubmitting || isDeleting}
+              onClick={handleClose}
+              disabled={isBusy}
               className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || isDeleting}
+              disabled={isBusy}
               className="flex-1 rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-sky-300"
             >
               {isSubmitting ? "Saving..." : submitLabel}
@@ -160,7 +165,7 @@ export function TaskModal({
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(true)}
-                disabled={isSubmitting || isDeleting}
+                disabled={isBusy}
                 className="inline-flex items-center justify-center rounded-md bg-slate-100 p-1 text-rose-600 transition hover:bg-rose-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Delete task"
               >
@@ -173,7 +178,7 @@ export function TaskModal({
         {showDeleteConfirm && isUpdateMode && onDelete ? (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/45 p-4">
             <DeleteConfirmDialog
-              description={`"${title}" will be permanently deleted.`}
+              description={`"${deleteTargetLabel}" will be permanently deleted.`}
               isPending={isDeleting}
               onCancel={() => setShowDeleteConfirm(false)}
               onConfirm={() => {

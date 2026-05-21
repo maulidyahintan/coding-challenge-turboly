@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="flex min-h-full flex-1 items-center justify-center bg-slate-100 px-4 py-10">
+    <main className="flex min-h-full flex-1 items-center justify-center bg-background px-4 py-10">
       <section className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-8 shadow-xl sm:p-10">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
           Turboly Coding Challenge

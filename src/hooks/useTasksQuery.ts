@@ -1,4 +1,4 @@
-import type { TaskItem } from "@/features/task/types";
+import type { TaskItem } from "@/components/dashboard/task";
 import { useQuery } from "@tanstack/react-query";
 
 export const useTasksQuery = () => {

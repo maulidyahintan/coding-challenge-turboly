@@ -1,4 +1,8 @@
-import { TaskFormPayload, TaskItem, TaskSortOption } from "@/features/task/types";
+import {
+  TaskFormPayload,
+  TaskItem,
+  TaskSortOption,
+} from "./types";
 
 const priorityRank: Record<TaskItem["priority"], number> = {
   HIGH: 0,

@@ -1,9 +1,7 @@
 "use client";
 
-import { MonthCalendar } from "@/components/shared/month-calendar";
-import { SelectedDateTaskList } from "@/features/task/components/selected-date-task-list";
-import { TaskAlertsSection } from "@/features/task/components/task-alerts-section";
-import { TaskManager } from "@/features/task/components/task-manager";
+import { MonthCalendar, SelectedDateTaskList } from "@/components/dashboard/section-calendar";
+import { TaskAlertsSection, TaskManager } from "@/components/dashboard/task";
 
 type DesktopDashboardPanelsProps = Readonly<{
   selectedDate: Date | undefined;

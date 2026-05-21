@@ -1,7 +1,7 @@
 "use client";
 
+import { useLogout } from "@/hooks/useLogout";
 import { ChevronDown, LogOut, UserCircle2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type LogoutButtonProps = Readonly<{
@@ -10,9 +10,7 @@ type LogoutButtonProps = Readonly<{
 }>;
 
 export function LogoutButton({ userEmail, iconOnly = false }: LogoutButtonProps) {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { logout, isLoggingOut, logoutError } = useLogout();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -30,24 +28,6 @@ export function LogoutButton({ userEmail, iconOnly = false }: LogoutButtonProps)
     globalThis.addEventListener("mousedown", handleOutsideClick);
     return () => globalThis.removeEventListener("mousedown", handleOutsideClick);
   }, []);
-
-  const handleLogout = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    const response = await fetch("/api/auth/logout", {
-      method: "POST",
-    });
-
-    if (!response.ok) {
-      setError("Logout failed. Please try again.");
-      setIsLoading(false);
-      return;
-    }
-
-    router.push("/login");
-    router.refresh();
-  };
 
   return (
     <div ref={containerRef} className="relative flex flex-col items-end gap-2">
@@ -81,17 +61,17 @@ export function LogoutButton({ userEmail, iconOnly = false }: LogoutButtonProps)
         <div className="absolute right-0 top-12 z-100 w-52 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
           <button
             type="button"
-            onClick={handleLogout}
-            disabled={isLoading}
+            onClick={logout}
+            disabled={isLoggingOut}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:text-rose-300"
           >
             <LogOut size={16} />
-            {isLoading ? "Signing out..." : "Logout"}
+            {isLoggingOut ? "Signing out..." : "Logout"}
           </button>
         </div>
       ) : null}
 
-      {error ? <p className="text-xs text-rose-200">{error}</p> : null}
+      {logoutError ? <p className="text-xs text-rose-200">{logoutError}</p> : null}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import type { TaskItem } from "@/features/task/types";
+import type { TaskItem } from "@/components/dashboard/task";
 import { memo } from "react";
 
 const priorityArticleClassName: Record<TaskItem["priority"], string> = {
