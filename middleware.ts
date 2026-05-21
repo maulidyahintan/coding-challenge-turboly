@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 type RouteIntent = "protected" | "auth" | "public";
 
 const AUTH_PAGES = new Set(["/login", "/register"]);
-const PUBLIC_PREFIXES = ["/_next", "/api/auth", "/favicon.ico", "/unauthorized"];
+const PROTECTED_PREFIXES = ["/dashboard"];
 const SESSION_COOKIE_NAME = "turboly_session";
 
 function getRouteIntent(pathname: string): RouteIntent {
@@ -12,11 +12,11 @@ function getRouteIntent(pathname: string): RouteIntent {
     return "auth";
   }
 
-  if (PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
-    return "public";
+  if (PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+    return "protected";
   }
 
-  return "protected";
+  return "public";
 }
 
 export async function middleware(request: NextRequest) {
@@ -48,5 +48,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/dashboard/:path*", "/login", "/register"],
 };
