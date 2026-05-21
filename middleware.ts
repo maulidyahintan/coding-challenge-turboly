@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
-import { SESSION_COOKIE_NAME } from "@/lib/auth/session";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 type RouteIntent = "protected" | "auth" | "public";
 
 const AUTH_PAGES = new Set(["/login"]);
 const PUBLIC_PREFIXES = ["/_next", "/api/auth", "/favicon.ico", "/unauthorized"];
+const SESSION_COOKIE_NAME = "turboly_session";
 
 function getRouteIntent(pathname: string): RouteIntent {
   if (AUTH_PAGES.has(pathname)) {

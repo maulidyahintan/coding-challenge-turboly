@@ -1,5 +1,6 @@
+import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
 import { authenticateGoogleUser } from "@/lib/auth/service";
-import { createSessionToken, SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/auth/session";
+import { createSessionToken, sessionCookieOptions } from "@/lib/auth/session";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 

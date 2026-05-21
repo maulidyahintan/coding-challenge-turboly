@@ -20,7 +20,7 @@ export function DashboardPageClient({ userEmail }: DashboardPageClientProps) {
 
   return (
     <>
-      <main className="flex h-screen flex-col gap-4 bg-linear-to-b from-sky-400 via-sky-200 to-sky-500 px-3 py-4 sm:px-5 sm:py-6">
+      <main className="flex h-screen flex-col gap-4 bg-linear-to-b from-sky-800 via-sky-400 to-sky-500 px-3 py-4 sm:px-5 sm:py-6">
         <div className="relative z-50 mx-auto justify-between hidden w-full md:flex lg:hidden">
           <DashboardBranding />
           <CreateTaskButton onClick={openTaskModalCreate} />

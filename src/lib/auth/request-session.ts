@@ -1,6 +1,7 @@
-import type { NextRequest } from "next/server";
+import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
+import { verifySessionToken } from "@/lib/auth/session";
 import type { SessionPayload } from "@/types/auth";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import type { NextRequest } from "next/server";
 
 export async function readRequestSession(
   request: NextRequest
