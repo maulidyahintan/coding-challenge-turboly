@@ -44,35 +44,35 @@ This project demonstrates:
 
 ### Desktop
 
-![Desktop Login](/screenshoot/dekstop_login.png)
-![Desktop Register](/screenshoot/dekstop_register.png)
-![Desktop Dashboard](/screenshoot/dekstop_dashboard.png)
-![Desktop Create Task](/screenshoot/dekstop_create_task.png)
-![Desktop Update Task](/screenshoot/dekstop_update_task.png)
+![Desktop Login](public/screenshoot/dekstop_login.png)
+![Desktop Register](public/screenshoot/dekstop_register.png)
+![Desktop Dashboard](public/screenshoot/dekstop_dashboard.png)
+![Desktop Create Task](public/screenshoot/dekstop_create_task.png)
+![Desktop Update Task](public/screenshoot/dekstop_update_task.png)
 
 ### Tablet
 
-![Tablet Login](/screenshoot/tablet_login.png)
-![Tablet Register](/screenshoot/tablet_register.png)
-![Tablet Task Manager](/screenshoot/tablet_task_manager.png)
-![Tablet Task Manager Max Sidebar](/screenshoot/tablet_task_manager_max_sidebar.png)
-![Tablet Calendar Min Sidebar](/screenshoot/tablet_calendar_minimize_sidebar.png)
-![Tablet Calendar Max Sidebar](/screenshoot/tablet_calendar_maximize_sidebar.png)
-![Tablet Create Task](/screenshoot/tablet_create_task.png)
-![Tablet Update Task](/screenshoot/tablet_update_task.png)
-![Tablet Unauthorized Page](/screenshoot/tablet_unauthorized_page.png)
+![Tablet Login](public/screenshoot/tablet_login.png)
+![Tablet Register](public/screenshoot/tablet_register.png)
+![Tablet Task Manager](public/screenshoot/tablet_task_manager.png)
+![Tablet Task Manager Max Sidebar](public/screenshoot/tablet_task_manager_max_sidebar.png)
+![Tablet Calendar Min Sidebar](public/screenshoot/tablet_calendar_minimize_sidebar.png)
+![Tablet Calendar Max Sidebar](public/screenshoot/tablet_calendar_maximize_sidebar.png)
+![Tablet Create Task](public/screenshoot/tablet_create_task.png)
+![Tablet Update Task](public/screenshoot/tablet_update_task.png)
+![Tablet Unauthorized Page](public/screenshoot/tablet_unauthorized_page.png)
 
 ### Mobile
 
-![Mobile Login](/screenshoot/mobile_login.png)
-![Mobile Register](/screenshoot/mobile_register.png)
-![Mobile Tab Home](/screenshoot/mobile_tab_home.png)
-![Mobile Tab Tasks](/screenshoot/mobile_tab_tasks.png)
-![Mobile Tab Calendar](/screenshoot/mobile_tab_calendar.png)
-![Mobile Tab Profile](/screenshoot/mobile_tab_profile.png)
-![Mobile Create Task](/screenshoot/mobile_create_task.png)
-![Mobile Update Task](/screenshoot/mobile_update_task.png)
-![Mobile Unauthorized Page](/screenshoot/mobile_unauthorized_page.png)
+![Mobile Login](public/screenshoot/mobile_login.png)
+![Mobile Register](public/screenshoot/mobile_register.png)
+![Mobile Tab Home](public/screenshoot/mobile_tab_home.png)
+![Mobile Tab Tasks](public/screenshoot/mobile_tab_tasks.png)
+![Mobile Tab Calendar](public/screenshoot/mobile_tab_calendar.png)
+![Mobile Tab Profile](public/screenshoot/mobile_tab_profile.png)
+![Mobile Create Task](public/screenshoot/mobile_create_task.png)
+![Mobile Update Task](public/screenshoot/mobile_update_task.png)
+![Mobile Unauthorized Page](public/screenshoot/mobile_unauthorized_page.png)
 
 ## Tech Stack
 
