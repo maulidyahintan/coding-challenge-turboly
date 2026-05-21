@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type RegisterPayload = {
   email: string;
@@ -27,6 +27,8 @@ type LoginResponse = {
 };
 
 export const useLoginMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (payload: LoginPayload) => {
       const response = await fetch("/api/auth/login", {
@@ -48,6 +50,9 @@ export const useLoginMutation = () => {
       }
 
       return result.user;
+    },
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ["tasks"] });
     },
   });
 };
