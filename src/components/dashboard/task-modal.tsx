@@ -135,7 +135,7 @@ export function TaskModal({
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-slate-700">Task Status</p>
 
-                <label className="inline-flex cursor-pointer items-center">
+                <label className="relative inline-flex h-7 w-14 cursor-pointer items-center">
                   <input
                     type="checkbox"
                     name="completed"
@@ -145,9 +145,8 @@ export function TaskModal({
                     className="peer sr-only"
                     aria-label="Toggle task completion"
                   />
-                  <span className="relative h-7 w-14 rounded-full border border-slate-400 bg-slate-300 transition peer-checked:border-emerald-500 peer-checked:bg-emerald-500/90 peer-disabled:cursor-not-allowed peer-disabled:opacity-60">
-                    <span className="absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 peer-checked:translate-x-7" />
-                  </span>
+                  <span className="h-7 w-14 rounded-full border border-slate-400 bg-slate-300 transition peer-checked:border-emerald-500 peer-checked:bg-emerald-500/90 peer-disabled:cursor-not-allowed peer-disabled:opacity-60" />
+                  <span className="pointer-events-none absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 peer-checked:translate-x-7 peer-disabled:opacity-60" />
                 </label>
               </div>
             </div>

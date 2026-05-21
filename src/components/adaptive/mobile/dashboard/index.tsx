@@ -120,7 +120,7 @@ export function MobileDashboardPanels({
   const completedCount = useMemo(() => tasks.filter((task) => task.completed).length, [tasks]);
 
   const recentTasks = useMemo(
-    () => [...tasks].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0, 3),
+    () => [...tasks].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0, 5),
     [tasks]
   );
 
@@ -140,11 +140,15 @@ export function MobileDashboardPanels({
   const { logout, isLoggingOut, logoutError } = useLogout();
   const greeting = getGreeting();
   const displayName = getDisplayName(userEmail);
+  const isCalendarTab = activeTab === MOBILE_TAB.CALENDAR;
+  const contentContainerClassName = isCalendarTab
+    ? "min-h-0 flex flex-1 flex-col overflow-hidden pb-24"
+    : "min-h-0 flex-1 overflow-y-auto pb-24";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col md:hidden">
       {/* Scrollable content area */}
-      <div className="min-h-0 flex-1 overflow-y-auto pb-24" aria-busy={isLoading}>
+      <div className={contentContainerClassName} aria-busy={isLoading}>
         {activeTab === MOBILE_TAB.HOME ? (
           <div className="flex flex-col gap-4">
             <div className="text-white backdrop-blur-sm">
@@ -184,7 +188,10 @@ export function MobileDashboardPanels({
                 <h3 className="text-md font-bold uppercase text-white">Recent Task</h3>
                 <button
                   type="button"
-                  onClick={() => setTabParam(MOBILE_TAB.TASKS)}
+                  onClick={() => {
+                    handleAlertClick("all");
+                    setTabParam(MOBILE_TAB.TASKS);
+                  }}
                   className="text-xs font-semibold uppercase tracking-[0.08em] text-sky-100/80 transition hover:text-white"
                 >
                   See all
@@ -225,15 +232,15 @@ export function MobileDashboardPanels({
         ) : null}
 
         {activeTab === MOBILE_TAB.CALENDAR ? (
-          <div className="flex flex-col gap-3">
-            <h3 className="text-md font-bold uppercase text-white">Calendar</h3>
-            <div className="overflow-hidden rounded-2xl border border-sky-300/30 bg-white/95">
+          <div className="flex min-h-0 flex-1 flex-col gap-3">
+            <h3 className="text-md shrink-0 font-bold uppercase text-white">Calendar</h3>
+            <div className="shrink-0 overflow-hidden rounded-2xl border border-sky-300/30 bg-white/95">
               <MonthCalendar
                 selectedDate={selectedDate}
                 onSelectedDateChange={onSelectedDateChange}
               />
             </div>
-            <div className="min-h-0 overflow-hidden">
+            <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
               <SelectedDateTaskList selectedDate={selectedDate} isMobileView />
             </div>
           </div>
@@ -254,7 +261,7 @@ export function MobileDashboardPanels({
       </div>
 
       {/* FAB — only visible on Tasks tab */}
-      {activeTab === MOBILE_TAB.TASKS ? (
+      {activeTab === MOBILE_TAB.TASKS || activeTab === MOBILE_TAB.HOME ? (
         <button
           type="button"
           onClick={openTaskModalCreate}

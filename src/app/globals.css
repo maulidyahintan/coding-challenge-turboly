@@ -12,6 +12,18 @@
   --text-secondary: #7d8794;
   --border: #dce3e8;
   --foreground: var(--text-primary);
+
+  --task-alert-due-today: #6e8ea7;
+  --task-alert-overdue: #d46a7e;
+  --task-alert-open: #2fa3b7;
+  --task-alert-completed: #8a79db;
+  --task-alert-all: #5c616a;
+
+  --task-alert-due-today-active: #5f7f99;
+  --task-alert-overdue-active: #be5a6e;
+  --task-alert-open-active: #278ea0;
+  --task-alert-completed-active: #7766cb;
+  --task-alert-all-active: #8893a4;
 }
 
 @theme inline {

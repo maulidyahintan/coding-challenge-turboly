@@ -93,8 +93,8 @@ export function TaskCard({
             <h3
               className={
                 task.completed
-                  ? "text-sm font-semibold leading-snug text-slate-500 line-through"
-                  : "text-sm font-semibold leading-snug"
+                  ? "text-sm capitalize font-semibold leading-snug text-slate-500 line-through"
+                  : "text-sm capitalize font-semibold leading-snug"
               }
             >
               {task.title}

@@ -5,8 +5,8 @@ import { MobileDashboardPanels } from "@/components/adaptive/mobile/dashboard";
 import { TabletDashboardPanels } from "@/components/adaptive/tablet/dashboard";
 import { useTasksContext } from "@/providers/TasksProvider";
 import { useState } from "react";
-import { DashboardBranding } from "./dashboard-branding";
 import { CreateTaskButton } from "./create-task-button";
+import { DashboardBranding } from "./dashboard-branding";
 import { LogoutButton } from "./logout-button";
 import { TaskModalContainer } from "./task-modal-container";
 
@@ -20,7 +20,7 @@ export function DashboardPageClient({ userEmail }: DashboardPageClientProps) {
 
   return (
     <>
-      <main className="flex h-screen flex-col gap-4 bg-linear-to-b from-sky-700 via-sky-600 to-sky-500 px-3 py-4 sm:px-5 sm:py-6">
+      <main className="flex h-screen flex-col gap-4 bg-linear-to-b from-sky-400 via-sky-200 to-sky-500 px-3 py-4 sm:px-5 sm:py-6">
         <div className="relative z-50 mx-auto justify-between hidden w-full md:flex lg:hidden">
           <DashboardBranding />
           <CreateTaskButton onClick={openTaskModalCreate} />

@@ -49,7 +49,7 @@ export function SelectedDateTaskList({
   return (
     <>
       <div
-        className={`flex flex-col min-h-0 flex-1 ${
+        className={`flex w-full min-w-0 flex-col min-h-0 flex-1 ${
           isMobileView ? "" : "bg-white p-3 border-t border-sky-300/30"
         }`}
       >
@@ -61,7 +61,10 @@ export function SelectedDateTaskList({
           {formatSelectedDateLabel(selectedDate)} ({dateTasks.length})
         </p>
 
-        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1" aria-busy={isLoading}>
+        <div
+          className="min-h-0 w-full min-w-0 flex-1 space-y-2 overflow-y-auto overflow-x-hidden pr-1"
+          aria-busy={isLoading}
+        >
           {isLoading ? <DataStateMessage kind="loading" message="Loading tasks..." /> : null}
 
           {error ? <DataStateMessage kind="error" message={error.message} /> : null}

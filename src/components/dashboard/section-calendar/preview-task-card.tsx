@@ -25,20 +25,20 @@ export const PreviewTaskCard = memo(function TaskCard({
   return (
     <article
       key={task.id}
-      className={`rounded-lg border p-3 ${priorityArticleClassName[task.priority]}`}
+      className={`w-full min-w-0 max-w-full overflow-hidden rounded-lg border p-3 ${priorityArticleClassName[task.priority]}`}
     >
-      <div className="flex items-center justify-between gap-2">
-        <p className="flex-1 truncate text-sm font-semibold">{task.title}</p>
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <p className="min-w-0 flex-1 truncate text-sm font-semibold capitalize">{task.title}</p>
         <button
           type="button"
           onClick={onDetail}
-          className={`rounded-md border px-2 py-1 text-xs font-semibold transition ${priorityDetailButtonClassName[task.priority]}`}
+          className={`shrink-0 rounded-md border px-2 py-1 text-xs font-semibold transition ${priorityDetailButtonClassName[task.priority]}`}
         >
           Detail
         </button>
       </div>
       {task.description ? (
-        <p className="mt-1 truncate text-xs opacity-80">{task.description}</p>
+        <p className="mt-1 min-w-0 truncate text-xs opacity-80">{task.description}</p>
       ) : null}
     </article>
   );
