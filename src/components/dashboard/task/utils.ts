@@ -1,8 +1,5 @@
-import {
-  TaskFormPayload,
-  TaskItem,
-  TaskSortOption,
-} from "./types";
+import { createTaskSchema } from "@/lib/validations/task";
+import { TaskFormPayload, TaskItem, TaskSortOption } from "./types";
 
 const priorityRank: Record<TaskItem["priority"], number> = {
   HIGH: 0,
@@ -67,12 +64,15 @@ export function readTaskPayload(formData: FormData): TaskFormPayload {
 }
 
 export function validateTaskPayload(payload: TaskFormPayload) {
-  if (!payload.title.trim()) {
-    return "Title is required.";
-  }
+  const parsed = createTaskSchema.safeParse({
+    title: payload.title,
+    description: payload.description,
+    priority: payload.priority,
+    dueDate: payload.dueDate,
+  });
 
-  if (!payload.dueDate) {
-    return "Due date is required.";
+  if (!parsed.success) {
+    return parsed.error.issues[0]?.message ?? "Invalid task payload.";
   }
 
   return null;

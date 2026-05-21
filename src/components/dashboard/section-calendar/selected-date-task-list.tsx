@@ -62,13 +62,9 @@ export function SelectedDateTaskList({
         </p>
 
         <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1" aria-busy={isLoading}>
-          {isLoading ? (
-            <DataStateMessage kind="loading" message="Loading tasks..." />
-          ) : null}
+          {isLoading ? <DataStateMessage kind="loading" message="Loading tasks..." /> : null}
 
-          {error ? (
-            <DataStateMessage kind="error" message={error.message} />
-          ) : null}
+          {error ? <DataStateMessage kind="error" message={error.message} /> : null}
 
           {!isLoading && !error && dateTasks.length === 0 ? (
             <DataStateMessage kind="empty" message="No task on this date." />

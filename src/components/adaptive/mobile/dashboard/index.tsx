@@ -12,7 +12,12 @@ import {
   TaskAlertTone,
   TaskManager,
 } from "@/components/dashboard/task";
-import { DataStateMessage, IconTabNav, type IconTabNavItem, UserAccountPanel } from "@/components/ui";
+import {
+  DataStateMessage,
+  IconTabNav,
+  type IconTabNavItem,
+  UserAccountPanel,
+} from "@/components/ui";
 import { useLogout } from "@/hooks/useLogout";
 import { useTasksContext } from "@/providers/TasksProvider";
 import { CalendarDays, Home, Plus, SquareKanban, UserCircle2 } from "lucide-react";

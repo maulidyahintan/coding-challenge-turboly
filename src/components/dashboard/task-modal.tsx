@@ -75,6 +75,7 @@ export function TaskModal({
             <input
               required
               name="title"
+              maxLength={120}
               defaultValue={initialValues?.title ?? ""}
               placeholder="Task title"
               className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-sans text-sm text-slate-900 outline-none focus:border-sky-500"
@@ -84,6 +85,7 @@ export function TaskModal({
           <FormLabel text="Description">
             <textarea
               name="description"
+              maxLength={400}
               defaultValue={initialValues?.description ?? ""}
               placeholder="Description (optional)"
               rows={3}
@@ -117,7 +119,13 @@ export function TaskModal({
           </div>
 
           {errorMessage ? (
-            <p className="rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-700">{errorMessage}</p>
+            <p
+              role="alert"
+              aria-live="assertive"
+              className="rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-700"
+            >
+              {errorMessage}
+            </p>
           ) : null}
 
           {isCompleted === undefined ? null : (

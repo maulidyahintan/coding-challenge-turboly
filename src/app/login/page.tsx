@@ -1,6 +1,7 @@
 "use client";
 
 import { useLoginMutation } from "@/hooks/useAuthMutation";
+import { loginSchema } from "@/lib/validations/auth";
 import { Building2, Eye, EyeOff, KeyRound, Mail } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -43,11 +44,18 @@ export default function LoginPage() {
       return;
     }
 
-    const email = emailValue.trim();
-    const password = passwordValue;
+    const parsedInput = loginSchema.safeParse({
+      email: emailValue,
+      password: passwordValue,
+    });
+
+    if (!parsedInput.success) {
+      setErrorMessage(parsedInput.error.issues[0]?.message ?? "Invalid login request.");
+      return;
+    }
 
     try {
-      await loginMutation.mutateAsync({ email, password });
+      await loginMutation.mutateAsync(parsedInput.data);
       router.push("/dashboard");
       router.refresh();
     } catch (error) {

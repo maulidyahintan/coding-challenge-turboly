@@ -1,6 +1,7 @@
 "use client";
 
 import { useRegisterMutation } from "@/hooks/useAuthMutation";
+import { registerSchema } from "@/lib/validations/auth";
 import { Building2, Eye, EyeOff, KeyRound, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -33,17 +34,25 @@ export default function RegisterPage() {
       return;
     }
 
-    const email = emailValue.trim();
-    const password = passwordValue;
+    const parsedInput = registerSchema.safeParse({
+      email: emailValue,
+      password: passwordValue,
+    });
+
+    if (!parsedInput.success) {
+      setErrorMessage(parsedInput.error.issues[0]?.message ?? "Invalid registration request.");
+      return;
+    }
+
     const confirmPassword = confirmPasswordValue;
 
-    if (password !== confirmPassword) {
+    if (parsedInput.data.password !== confirmPassword) {
       setErrorMessage("Password and confirmation password do not match.");
       return;
     }
 
     try {
-      await registerMutation.mutateAsync({ email, password });
+      await registerMutation.mutateAsync(parsedInput.data);
       router.push("/login");
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Failed to create account.");

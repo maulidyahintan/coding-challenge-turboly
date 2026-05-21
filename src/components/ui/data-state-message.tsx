@@ -17,7 +17,11 @@ export function DataStateMessage({ kind, message, className }: DataStateMessageP
   const live = kind === "error" ? "assertive" : "polite";
 
   return (
-    <p role={role} aria-live={live} className={`${baseClassName} ${kindClassName[kind]} ${className ?? ""}`}>
+    <p
+      role={role}
+      aria-live={live}
+      className={`${baseClassName} ${kindClassName[kind]} ${className ?? ""}`}
+    >
       {message}
     </p>
   );
