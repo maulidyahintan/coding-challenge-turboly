@@ -1,5 +1,6 @@
 "use client";
 
+import { DataStateMessage } from "@/components/ui";
 import { useTasksContext } from "@/providers/TasksProvider";
 import { useMemo } from "react";
 import { TaskAlertSquare } from "./task-alert-square";
@@ -10,7 +11,7 @@ type TaskAlertsSectionProps = Readonly<{
 }>;
 
 export function TaskAlertsSection({ isTabletScrollable = false }: TaskAlertsSectionProps) {
-  const { tasks, activeGrupTasks, setActiveGrupTasks } = useTasksContext();
+  const { tasks, isLoading, error, activeGrupTasks, setActiveGrupTasks } = useTasksContext();
 
   const dueTodayCount = useMemo(
     () => tasks.filter((task) => !task.completed && isDueTodayDate(task.dueDate)).length,
@@ -58,6 +59,28 @@ export function TaskAlertsSection({ isTabletScrollable = false }: TaskAlertsSect
       onClick: () => setActiveGrupTasks("all"),
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="space-y-2" aria-busy="true">
+        <p className="sr-only" role="status" aria-live="polite">
+          Loading task alerts
+        </p>
+        <div className={isTabletScrollable ? "flex min-w-max gap-3 pr-1" : "flex gap-3"}>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={`task-alert-loading-${index}`}
+              className="h-24 flex-1 animate-pulse rounded-lg border border-sky-200/40 bg-white/60"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <DataStateMessage kind="error" message={error.message} className="rounded-lg" />;
+  }
 
   if (isTabletScrollable) {
     return (

@@ -98,6 +98,8 @@ export function TaskAlertSquare({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={isActive}
+      aria-label={`${toneLabels[tone]} tasks: ${count}`}
       className={`flex h-24 cursor-pointer flex-col justify-between rounded-lg p-3 text-left ${fillWidth ? "w-full" : "flex-1"} ${toneClasses[tone]} ${useActiveStyle ? activeToneClasses[tone] : "bg-white"}`}
     >
       <div className="flex items-start justify-between gap-2">

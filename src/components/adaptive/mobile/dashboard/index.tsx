@@ -12,7 +12,7 @@ import {
   TaskAlertTone,
   TaskManager,
 } from "@/components/dashboard/task";
-import { IconTabNav, type IconTabNavItem, UserAccountPanel } from "@/components/ui";
+import { DataStateMessage, IconTabNav, type IconTabNavItem, UserAccountPanel } from "@/components/ui";
 import { useLogout } from "@/hooks/useLogout";
 import { useTasksContext } from "@/providers/TasksProvider";
 import { CalendarDays, Home, Plus, SquareKanban, UserCircle2 } from "lucide-react";
@@ -79,8 +79,15 @@ export function MobileDashboardPanels({
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const activeTab: MobileTab = isMobileTab(tabParam) ? tabParam : MOBILE_TAB.HOME;
-  const { tasks, activeGrupTasks, setActiveGrupTasks, openTaskModalCreate, openTaskModalEdit } =
-    useTasksContext();
+  const {
+    tasks,
+    isLoading,
+    error,
+    activeGrupTasks,
+    setActiveGrupTasks,
+    openTaskModalCreate,
+    openTaskModalEdit,
+  } = useTasksContext();
 
   const setTabParam = (tab: MobileTab) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -132,7 +139,7 @@ export function MobileDashboardPanels({
   return (
     <div className="flex min-h-0 flex-1 flex-col md:hidden">
       {/* Scrollable content area */}
-      <div className="min-h-0 flex-1 overflow-y-auto pb-24">
+      <div className="min-h-0 flex-1 overflow-y-auto pb-24" aria-busy={isLoading}>
         {activeTab === MOBILE_TAB.HOME ? (
           <div className="flex flex-col gap-4">
             <div className="text-white backdrop-blur-sm">
@@ -145,19 +152,26 @@ export function MobileDashboardPanels({
               </h2>
             </div>
 
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {alertItems.map((item) => (
-                <TaskAlertSquare
-                  key={item.tone}
-                  tone={item.tone}
-                  count={item.count}
-                  isActive={activeGrupTasks === item.tone}
-                  isMobileView
-                  forceActiveStyle
-                  alwaysShowView
-                  onClick={() => handleAlertClick(item.tone)}
-                />
-              ))}
+            <div className="mt-4 grid grid-cols-3 gap-2" aria-busy={isLoading}>
+              {isLoading
+                ? Array.from({ length: 5 }).map((_, index) => (
+                    <div
+                      key={`mobile-alert-loading-${index}`}
+                      className="h-24 animate-pulse rounded-lg border border-sky-200/40 bg-white/60"
+                    />
+                  ))
+                : alertItems.map((item) => (
+                    <TaskAlertSquare
+                      key={item.tone}
+                      tone={item.tone}
+                      count={item.count}
+                      isActive={activeGrupTasks === item.tone}
+                      isMobileView
+                      forceActiveStyle
+                      alwaysShowView
+                      onClick={() => handleAlertClick(item.tone)}
+                    />
+                  ))}
             </div>
 
             <section className="mt-2">
@@ -173,19 +187,27 @@ export function MobileDashboardPanels({
               </div>
 
               <div className="max-h-[38vh] space-y-2 overflow-y-auto pr-1">
-                {recentTasks.length === 0 ? (
-                  <p className="rounded-lg bg-white/85 px-3 py-2 text-sm text-slate-700">
-                    No recent task.
-                  </p>
-                ) : (
-                  recentTasks.map((task) => (
-                    <PreviewTaskCard
-                      key={task.id}
-                      task={task}
-                      onDetail={() => openTaskModalEdit(task)}
-                    />
-                  ))
-                )}
+                {isLoading ? (
+                  <DataStateMessage kind="loading" message="Loading recent tasks..." />
+                ) : null}
+
+                {!isLoading && error ? (
+                  <DataStateMessage kind="error" message={error.message} />
+                ) : null}
+
+                {!isLoading && !error ? (
+                  recentTasks.length === 0 ? (
+                    <DataStateMessage kind="empty" message="No recent task." />
+                  ) : (
+                    recentTasks.map((task) => (
+                      <PreviewTaskCard
+                        key={task.id}
+                        task={task}
+                        onDetail={() => openTaskModalEdit(task)}
+                      />
+                    ))
+                  )
+                ) : null}
               </div>
             </section>
           </div>

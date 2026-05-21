@@ -1,7 +1,8 @@
 "use client";
 
+import { DataStateMessage } from "@/components/ui";
 import { ArrowUpDown } from "lucide-react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { DeleteConfirmDialog } from "../delete-confirm-dialog";
 import { TaskCard } from "./task-card";
 import { TaskItem, TaskSortOption } from "./types";
@@ -38,6 +39,9 @@ export function TaskListSection({
   onToggleCompleteTask,
 }: TaskListSectionProps) {
   const [taskPendingDelete, setTaskPendingDelete] = useState<TaskItem | null>(null);
+  const id = useId();
+  const filterInputId = `${id}-task-title-filter`;
+  const sortSelectId = `${id}-task-sort-select`;
 
   const handleConfirmDelete = () => {
     if (!taskPendingDelete) {
@@ -56,12 +60,12 @@ export function TaskListSection({
           <div className="flex flex-wrap items-center gap-2">
             <label
               className="sr-only md:not-sr-only md:text-xs md:font-medium md:text-sky-100/75"
-              htmlFor="task-title-filter"
+              htmlFor={filterInputId}
             >
               Search
             </label>
             <input
-              id="task-title-filter"
+              id={filterInputId}
               value={titleFilter}
               onChange={(event) => onTitleFilterChange(event.target.value)}
               placeholder="Search by title or desc..."
@@ -69,7 +73,7 @@ export function TaskListSection({
             />
             <label
               className="sr-only md:not-sr-only md:text-xs md:font-medium md:text-sky-100/75"
-              htmlFor="task-sort-select"
+              htmlFor={sortSelectId}
             >
               Sort
             </label>
@@ -79,7 +83,7 @@ export function TaskListSection({
                 className="pointer-events-none absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-sky-100/75 md:left-2 md:translate-x-0"
               />
               <select
-                id="task-sort-select"
+                id={sortSelectId}
                 aria-label="Sort tasks"
                 value={sortBy}
                 onChange={(event) => onSortChange(event.target.value as TaskSortOption)}
@@ -95,22 +99,24 @@ export function TaskListSection({
         </div>
 
         {errorMessage ? (
-          <p className="mb-3 rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-700">
-            {errorMessage}
-          </p>
+          <DataStateMessage kind="error" message={errorMessage} className="mb-3 rounded-lg" />
         ) : null}
 
-        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+        <p className="sr-only" role="status" aria-live="polite">
+          {isLoading ? "Loading task list" : `${tasks.length} task items shown`}
+        </p>
+
+        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1" aria-busy={isLoading}>
           {isLoading ? (
-            <p className="rounded-lg bg-white/80 px-3 py-2 text-sm text-slate-600">
-              Loading tasks...
-            </p>
+            <DataStateMessage kind="loading" message="Loading tasks..." className="rounded-lg" />
           ) : null}
 
           {!isLoading && tasks.length === 0 ? (
-            <p className="rounded-lg bg-white/80 px-3 py-2 text-sm text-slate-600">
-              No task yet. Create your first task.
-            </p>
+            <DataStateMessage
+              kind="empty"
+              message="No task yet. Create your first task."
+              className="rounded-lg"
+            />
           ) : null}
 
           {isLoading

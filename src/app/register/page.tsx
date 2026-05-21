@@ -65,7 +65,11 @@ export default function RegisterPage() {
           Register your work account to start managing tasks.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="mt-8 space-y-4"
+          aria-busy={registerMutation.isPending}
+        >
           <label className="block space-y-2">
             <span className="text-sm font-medium text-text-primary">Email</span>
             <span className="relative block">
@@ -139,7 +143,11 @@ export default function RegisterPage() {
           </label>
 
           {errorMessage ? (
-            <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+            <p
+              role="alert"
+              aria-live="assertive"
+              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
+            >
               {errorMessage}
             </p>
           ) : null}

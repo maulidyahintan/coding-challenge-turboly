@@ -1,6 +1,7 @@
 "use client";
 
 import { PreviewTaskCard } from "@/components/dashboard/section-calendar/preview-task-card";
+import { DataStateMessage } from "@/components/ui";
 import { useTasksContext } from "@/providers/TasksProvider";
 import { useMemo } from "react";
 
@@ -60,21 +61,17 @@ export function SelectedDateTaskList({
           {formatSelectedDateLabel(selectedDate)} ({dateTasks.length})
         </p>
 
-        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1" aria-busy={isLoading}>
           {isLoading ? (
-            <p className="rounded-md bg-white/90 px-3 py-2 text-sm text-slate-700">Loading...</p>
+            <DataStateMessage kind="loading" message="Loading tasks..." />
           ) : null}
 
           {error ? (
-            <p className="rounded-md bg-rose-100 px-3 py-2 text-sm text-rose-700">
-              {error.message}
-            </p>
+            <DataStateMessage kind="error" message={error.message} />
           ) : null}
 
           {!isLoading && !error && dateTasks.length === 0 ? (
-            <p className="rounded-md bg-white/90 px-3 py-2 text-sm text-slate-700">
-              No task on this date.
-            </p>
+            <DataStateMessage kind="empty" message="No task on this date." />
           ) : null}
 
           {!isLoading &&
