@@ -1,5 +1,11 @@
 import { ShieldAlert } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Unauthorized",
+  description: "Access denied. Please log in to continue.",
+};
 
 export default function UnauthorizedPage() {
   return (

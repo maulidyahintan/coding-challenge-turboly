@@ -1,4 +1,10 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Welcome page for Turboly Adaptive Task Manager.",
+};
 
 export default function Home() {
   return (
