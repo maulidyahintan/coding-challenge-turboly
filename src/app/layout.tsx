@@ -1,6 +1,6 @@
+import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/constants/site";
 import { QueryClientProvider } from "@/providers/QueryClientProvider";
 import { TasksProvider } from "@/providers/TasksProvider";
-import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/constants/site";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
