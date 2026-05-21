@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
@@ -11,6 +12,7 @@ type UseLogoutResult = {
 
 export function useLogout(): UseLogoutResult {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
 
@@ -28,6 +30,8 @@ export function useLogout(): UseLogoutResult {
         setIsLoggingOut(false);
         return;
       }
+
+      queryClient.removeQueries({ queryKey: ["tasks"] });
 
       router.push("/login");
       router.refresh();
